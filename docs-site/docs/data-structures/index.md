@@ -64,6 +64,26 @@ BMS (Basic Mapping Support) copybooks define CICS 3270 terminal screen layouts. 
 | [DS-BMS-USR02](./bms-cousr02) | COUSR02.CPY | User Update Screen | UI Screens | COUSR02C |
 | [DS-BMS-USR03](./bms-cousr03) | COUSR03.CPY | User Delete Screen | UI Screens | COUSR03C |
 
+## Utility / Common / System Copybooks
+
+Utility and system-level copybooks that provide shared data structures, validation tables, UI constants, and infrastructure patterns used across the CardDemo application. These are generally not database records -- they define session state, configuration, error handling, and other cross-cutting concerns.
+
+| ID | Copybook | Title | Domain | Target |
+|----|----------|-------|--------|--------|
+| [DS-COMM-001](./cocom01y) | COCOM01Y.cpy | Common Communication Area | System | N/A (session state) |
+| [DS-ADMN-001](./coadm02y) | COADM02Y.cpy | Admin Menu Options | System | N/A (configuration) |
+| [DS-MENU-001](./comen02y) | COMEN02Y.cpy | Main Menu Options | System | N/A (configuration) |
+| [DS-STMT-001](./costm01) | COSTM01.CPY | Statement/Transaction Reporting Layout | Transactions | N/A (report view) |
+| [DS-TITL-001](./cottl01y) | COTTL01Y.cpy | Screen Title | System | N/A (UI constant) |
+| [DS-DATE-001](./csdat01y) | CSDAT01Y.cpy | Date/Time Structure | System | N/A (utility) |
+| [DS-LKUP-001](./cslkpcdy) | CSLKPCDY.cpy | Lookup Code Repository | System | N/A (validation rules) |
+| [DS-MSG1-001](./csmsg01y) | CSMSG01Y.cpy | Common Messages | System | N/A (UI messages) |
+| [DS-MSG2-001](./csmsg02y) | CSMSG02Y.cpy | Abend/Error Message Structure | System | N/A (error handling) |
+| [DS-SETA-001](./cssetaty) | CSSETATY.cpy | Set Attribute Macro | System | N/A (UI pattern) |
+| [DS-STRP-001](./csstrpfy) | CSSTRPFY.cpy | Store PFKey Utility | System | N/A (input handling) |
+| [DS-USEC-001](./csusr01y) | CSUSR01Y.cpy | User Security Record | User Security | dbo.UserSecurity / Azure AD |
+| [DS-UNUSED-001](./unused1y) | UNUSED1Y.cpy | Unused/Deprecated | System | N/A (deprecated -- do NOT migrate) |
+
 ## Coverage
 
 ### Data Record Copybooks
@@ -88,3 +108,13 @@ Each documented BMS screen copybook includes:
 - Screen layout notes and workflow description
 - Target architecture mapping (CICS/3270 to .NET web UI)
 - Migration considerations (compliance, PCI-DSS, GDPR, UX improvements)
+
+### Utility / Common / System Copybooks
+
+Each documented utility/system copybook includes:
+
+- COBOL source with field definitions
+- Purpose and usage context across the application
+- Target architecture mapping (CICS patterns to .NET equivalents)
+- Migration notes (what to migrate, what to replace, what to discard)
+- Compliance considerations (GDPR, PCI-DSS, FSA, DORA) where applicable
