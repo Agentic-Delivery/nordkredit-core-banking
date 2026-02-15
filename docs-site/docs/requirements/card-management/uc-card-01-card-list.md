@@ -1,6 +1,7 @@
 ---
 id: uc-card-01
 title: "UC-CARD-01: List Cards"
+sidebar_label: "UC-CARD-01: List Cards"
 sidebar_position: 1
 ---
 
