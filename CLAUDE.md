@@ -1,4 +1,4 @@
-<!-- delivery-factory:v1.1.0 -->
+<!-- delivery-factory:v1.6.0 -->
 # CLAUDE.md
 
 ## Regulated Financial System — READ CAREFULLY
