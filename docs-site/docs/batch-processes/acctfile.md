@@ -29,7 +29,7 @@ This is an initialization job, not a recurring batch process. It is executed on-
 
 | Step | Program | Description | Input | Output | Error Handling |
 |------|---------|-------------|-------|--------|----------------|
-| 1 (STEP05) | IDCAMS DELETE | Delete existing ACCTDATA.VSAM.KSDS cluster. Condition code override: IF MAXCC LE 08 THEN SET MAXCC = 0 (tolerates cluster-not-found) | N/A | Cluster removed (or no-op if absent) | MAXCC <= 8 tolerated (cluster may not exist); MAXCC > 8 aborts job |
+| 1 (STEP05) | IDCAMS DELETE | Delete existing ACCTDATA.VSAM.KSDS cluster. Condition code override: IF MAXCC LE 08 THEN SET MAXCC = 0 (tolerates cluster-not-found) | N/A | Cluster removed (or no-op if absent) | `MAXCC <= 8` tolerated (cluster may not exist); `MAXCC > 8` aborts job |
 | 2 (STEP10) | IDCAMS DEFINE CLUSTER | Define new VSAM KSDS cluster with KEYS(11 0) and RECORDSIZE(300 300), INDEXED | N/A | Empty VSAM KSDS cluster ACCTDATA.VSAM.KSDS | Abort on failure (allocation or catalog error) |
 | 3 (STEP15) | IDCAMS REPRO | Bulk-load account records from flat file ACCTDATA.PS into the VSAM KSDS cluster | ACCTDATA.PS (flat file) | Populated ACCTDATA.VSAM.KSDS | Abort on failure; check record count mismatch |
 
