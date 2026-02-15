@@ -13,12 +13,12 @@ COBOL copybook definitions and their mapped .NET equivalents.
 
 | Copybook | Record Length | Key | Business Rule | Purpose |
 |----------|-------------|-----|---------------|---------|
-| [`CVACT01Y.cpy`](./CVACT01Y) | 300 bytes | ACCT-ID PIC 9(11) | [ACCT-BR-001](../business-rules/account-management/acct-br-001) | Account master record layout |
-| [`CVACT02Y.cpy`](./CVACT02Y) | 150 bytes | CARD-NUM PIC X(16) | [ACCT-BR-009](../business-rules/account-management/acct-br-009) | Card record layout |
-| [`CVACT03Y.cpy`](./CVACT03Y) | 50 bytes | XREF-CARD-NUM PIC X(16) | [ACCT-BR-009](../business-rules/account-management/acct-br-009) | Card-customer-account cross-reference |
-| [`CVCRD01Y.cpy`](./cvcrd01y) | N/A (work area) | N/A | N/A | Card work area (AID keys, screen fields) |
-| [`CVCUS01Y.cpy`](./cvcus01y) | 500 bytes | CUST-ID | N/A | Customer record |
-| [`CVEXPORT.cpy`](./cvexport) | 500 bytes | N/A | N/A | Export record (multi-format data export) |
+| [`CVACT01Y.cpy`](./DS-ACCT-001) | 300 bytes | ACCT-ID PIC 9(11) | [ACCT-BR-001](../business-rules/account-management/acct-br-001) | Account master record layout |
+| [`CVACT02Y.cpy`](./DS-CARD-001) | 150 bytes | CARD-NUM PIC X(16) | [ACCT-BR-009](../business-rules/account-management/acct-br-009) | Card record layout |
+| [`CVACT03Y.cpy`](./DS-XREF-001) | 50 bytes | XREF-CARD-NUM PIC X(16) | [ACCT-BR-009](../business-rules/account-management/acct-br-009) | Card-customer-account cross-reference |
+| [`CVCRD01Y.cpy`](./DS-CRDWK-001) | N/A (work area) | N/A | N/A | Card work area (AID keys, screen fields) |
+| [`CVCUS01Y.cpy`](./DS-CUST-001) | 500 bytes | CUST-ID | N/A | Customer record |
+| [`CVEXPORT.cpy`](./DS-EXPRT-001) | 500 bytes | N/A | N/A | Export record (multi-format data export) |
 | [`CUSTREC.cpy`](./DS-CUST-002) | 500 bytes | N/A | N/A | Customer record (alternate) |
 
 ### Card Management
@@ -33,13 +33,13 @@ COBOL copybook definitions and their mapped .NET equivalents.
 
 | Copybook | Record Length | Key | Business Rule | Purpose |
 |----------|-------------|-----|---------------|---------|
-| [`CVTRA01Y.cpy`](./cvtra01y) | 50 bytes | N/A | N/A | Transaction category balance record |
-| [`CVTRA02Y.cpy`](./cvtra02y) | 50 bytes | N/A | N/A | Discount group record |
-| [`CVTRA03Y.cpy`](./cvtra03y) | 60 bytes | N/A | N/A | Transaction type record |
-| [`CVTRA04Y.cpy`](./cvtra04y) | 60 bytes | N/A | N/A | Transaction category record |
-| [`CVTRA05Y.cpy`](./cvtra05y) | 350 bytes | N/A | N/A | Transaction record |
-| [`CVTRA06Y.cpy`](./cvtra06y) | 350 bytes | N/A | N/A | Daily transaction record |
-| [`CVTRA07Y.cpy`](./cvtra07y) | N/A (report) | N/A | N/A | Transaction report structures |
+| [`CVTRA01Y.cpy`](./DS-TBAL-001) | 50 bytes | N/A | N/A | Transaction category balance record |
+| [`CVTRA02Y.cpy`](./DS-DGRP-001) | 50 bytes | N/A | N/A | Discount group record |
+| [`CVTRA03Y.cpy`](./DS-TTYP-001) | 60 bytes | N/A | N/A | Transaction type record |
+| [`CVTRA04Y.cpy`](./DS-TCAT-001) | 60 bytes | N/A | N/A | Transaction category record |
+| [`CVTRA05Y.cpy`](./DS-TRAN-001) | 350 bytes | N/A | N/A | Transaction record |
+| [`CVTRA06Y.cpy`](./DS-DTRAN-001) | 350 bytes | N/A | N/A | Daily transaction record |
+| [`CVTRA07Y.cpy`](./DS-TRPT-001) | N/A (report) | N/A | N/A | Transaction report structures |
 
 ## Authorization / IMS Extension Copybooks
 
