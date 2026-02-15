@@ -18,6 +18,7 @@ COBOL copybook definitions and their mapped .NET equivalents.
 | [`CVACT03Y.cpy`](./CVACT03Y) | 50 bytes | XREF-CARD-NUM PIC X(16) | [ACCT-BR-009](../business-rules/account-management/acct-br-009) | Card-customer-account cross-reference |
 | [`CVCRD01Y.cpy`](./cvcrd01y) | N/A (work area) | N/A | N/A | Card work area (AID keys, screen fields) |
 | [`CVCUS01Y.cpy`](./cvcus01y) | 500 bytes | CUST-ID | N/A | Customer record |
+| [`CVEXPORT.cpy`](./cvexport) | 500 bytes | N/A | N/A | Export record (multi-format data export) |
 
 ### Card Management
 
