@@ -1,4 +1,4 @@
-<!-- delivery-factory:v1.1.0 -->
+<!-- delivery-factory:v1.6.0 -->
 # CLAUDE.md
 
 ## Regulated Financial System — READ CAREFULLY
@@ -199,8 +199,13 @@ docs/
     lending/
     account-management/
   regulatory/                  # Regulatory traceability matrices
+docs-site/                     # Docusaurus documentation site
 .factory/
   context.md                   # Shared project context
+.github/
+  workflows/
+    ci.yml                     # PR validation CI
+    deploy-docs.yml            # Docs site deployment to GitHub Pages
 ```
 
 ---
@@ -215,6 +220,11 @@ docs/
 | Document lesson | `/lesson` |
 | Initialize project | `/factory-init` |
 | Upgrade factory | `/factory-upgrade` |
+| TDD strategy | `/tdd` |
+| Troubleshoot errors | `/troubleshoot` |
+| Git operations | `/git-workflow` |
+| Evidence package | `/evidence-package` |
+| Security review | `/security-compliance` |
 
 ---
 
