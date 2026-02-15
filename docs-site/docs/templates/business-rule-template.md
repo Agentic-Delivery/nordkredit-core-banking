@@ -16,7 +16,7 @@ priority: "{critical | high | medium | low}"
      Replace all {placeholder} values in the YAML front matter and body.
      Remove these instruction comments before submitting for review. -->
 
-# {DOMAIN}-BR-{NNN}: {Title}
+# \{DOMAIN\}-BR-\{NNN\}: \{Title\}
 
 ## Summary
 
@@ -24,7 +24,7 @@ priority: "{critical | high | medium | low}"
      why it exists, and which business process it belongs to. This should be
      understandable by a non-technical stakeholder. -->
 
-{Describe the business rule in plain language. What does it enforce? Why does it exist?}
+\{Describe the business rule in plain language. What does it enforce? Why does it exist?\}
 
 ## Business Logic
 
@@ -54,10 +54,10 @@ END-IF
 
 | Condition A | Condition B | Outcome |
 |-------------|-------------|---------|
-| True        | True        | {outcome_1} |
-| True        | False       | {outcome_2} |
-| False       | True        | {outcome_3} |
-| False       | False       | {outcome_4} |
+| True        | True        | \{outcome_1\} |
+| True        | False       | \{outcome_2\} |
+| False       | True        | \{outcome_3\} |
+| False       | False       | \{outcome_4\} |
 
 ## Source COBOL Reference
 
@@ -66,7 +66,7 @@ END-IF
      the reader to understand the flow. Always include line numbers. -->
 
 **Program:** `{PROGRAM.cbl}`
-**Lines:** {start-line}-{end-line}
+**Lines:** \{start-line\}-\{end-line\}
 
 ```cobol
 {Paste the relevant COBOL source code with line numbers.}
@@ -88,7 +88,7 @@ Example:
      error cases, and boundary conditions. These will be used to generate
      SpecFlow BDD tests. -->
 
-### Scenario 1: {Happy path description}
+### Scenario 1: \{Happy path description\}
 
 ```gherkin
 GIVEN {precondition}
@@ -98,7 +98,7 @@ THEN {expected outcome}
   AND {additional expected outcome if needed}
 ```
 
-### Scenario 2: {Error/rejection case description}
+### Scenario 2: \{Error/rejection case description\}
 
 ```gherkin
 GIVEN {precondition}
@@ -107,7 +107,7 @@ THEN {expected error outcome}
   AND {error handling behavior}
 ```
 
-### Scenario 3: {Boundary/edge case description}
+### Scenario 3: \{Boundary/edge case description\}
 
 ```gherkin
 GIVEN {boundary precondition}
@@ -123,9 +123,9 @@ THEN {expected boundary outcome}
 
 | Regulation | Article/Section | Requirement | How This Rule Satisfies It |
 |------------|----------------|-------------|---------------------------|
-| {e.g., PSD2} | {e.g., Art. 97} | {Requirement summary} | {How the rule addresses the requirement} |
-| {e.g., GDPR} | {e.g., Art. 6} | {Requirement summary} | {How the rule addresses the requirement} |
-| {e.g., FFFS 2014:5} | {e.g., Ch. 4 §3} | {Requirement summary} | {How the rule addresses the requirement} |
+| \{e.g., PSD2\} | \{e.g., Art. 97\} | \{Requirement summary\} | \{How the rule addresses the requirement\} |
+| \{e.g., GDPR\} | \{e.g., Art. 6\} | \{Requirement summary\} | \{How the rule addresses the requirement\} |
+| \{e.g., FFFS 2014:5\} | \{e.g., Ch. 4 §3\} | \{Requirement summary\} | \{How the rule addresses the requirement\} |
 
 ## Edge Cases
 
@@ -133,9 +133,9 @@ THEN {expected boundary outcome}
      conditions that the original COBOL code handles (or fails to handle).
      These are critical for ensuring the migrated implementation is correct. -->
 
-1. **{Edge case title}**: {Description of the edge case and how the current system handles it.}
-2. **{Edge case title}**: {Description of the edge case and how the current system handles it.}
-3. **{Edge case title}**: {Description of the edge case and how the current system handles it.}
+1. **\{Edge case title\}**: \{Description of the edge case and how the current system handles it.\}
+2. **\{Edge case title\}**: \{Description of the edge case and how the current system handles it.\}
+3. **\{Edge case title\}**: \{Description of the edge case and how the current system handles it.\}
 
 ## Domain Expert Notes
 
@@ -144,8 +144,8 @@ THEN {expected boundary outcome}
      COBOL developers). Include the expert's name and date for traceability.
      This section is critical for capturing knowledge that isn't in the code. -->
 
-- **{Expert name}** ({date}): {Note or clarification about this rule.}
-- **{Expert name}** ({date}): {Note or clarification about this rule.}
+- **\{Expert name\}** (\{date\}): \{Note or clarification about this rule.\}
+- **\{Expert name\}** (\{date\}): \{Note or clarification about this rule.\}
 
 ---
 

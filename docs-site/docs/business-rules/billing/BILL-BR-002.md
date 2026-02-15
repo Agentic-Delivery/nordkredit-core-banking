@@ -287,7 +287,7 @@ THEN each transaction ID is formed as: '<parm-date><sequential-suffix>'
 | Regulation | Article/Section | Requirement | How This Rule Satisfies It |
 |------------|----------------|-------------|---------------------------|
 | FFFS 2014:5 | Ch. 4 §1-4 | Credit interest rates must be disclosed and calculated transparently | Interest rates are stored in a disclosure group file keyed by account group and transaction category, enabling auditable rate application. |
-| PSD2 | Art. 45(1) | Charges and interest applied must be disclosed | Each interest charge creates an individual transaction record with description 'Int. for a/c <id>', providing a clear audit trail. |
+| PSD2 | Art. 45(1) | Charges and interest applied must be disclosed | Each interest charge creates an individual transaction record with description `'Int. for a/c <id>'`, providing a clear audit trail. |
 | EBA GL 2020/06 | §4.3 | Interest rate risk in the banking book must be managed | The separation of rates by disclosure group and transaction category allows differential rate management. |
 
 ## Edge Cases

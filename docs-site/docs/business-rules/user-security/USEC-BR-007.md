@@ -82,9 +82,9 @@ ELSE:
 | Lookup | Provided | - | No | - | Error: "User ID NOT found..." |
 | Lookup | Provided | - | Yes | - | Display current values, prompt PF5 |
 | Save | Empty | - | - | - | Error: "User ID can NOT be empty..." |
-| Save | Provided | No (any empty) | - | - | Error: "<field> can NOT be empty..." |
+| Save | Provided | No (any empty) | - | - | Error: "\<field\> can NOT be empty..." |
 | Save | Provided | Yes | Yes | No | Error: "Please modify to update ..." |
-| Save | Provided | Yes | Yes | Yes | Success: "User <ID> has been updated ..." |
+| Save | Provided | Yes | Yes | Yes | Success: "User \<ID\> has been updated ..." |
 | Save | Provided | Yes | No (deleted between lookup and save) | - | Error: "User ID NOT found..." |
 
 ### Key Navigation
