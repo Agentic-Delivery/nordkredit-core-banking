@@ -91,7 +91,7 @@ PROCESS-ENTER-KEY:
 | Yes | Invalid value | — | — | — | Error: 'Invalid value. Valid values are (Y/N)...' |
 | Yes | N/n | — | — | — | Screen cleared, error flag set |
 | Yes | Blank (initial) | — | No | — | Error: 'Account ID NOT found...' |
-| Yes | Blank (initial) | <= 0 | Yes | — | Error: 'You have nothing to pay...' |
+| Yes | Blank (initial) | \<= 0 | Yes | — | Error: 'You have nothing to pay...' |
 | Yes | Blank (initial) | > 0 | Yes | — | Display balance, prompt for confirmation |
 | Yes | Y/y | > 0 | Yes | No | Error: 'Account ID NOT found...' (xref lookup) |
 | Yes | Y/y | > 0 | Yes | Yes | Payment processed, balance set to zero |

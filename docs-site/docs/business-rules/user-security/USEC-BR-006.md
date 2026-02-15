@@ -66,7 +66,7 @@ EVALUATE response:
 | Provided | Provided | Provided | Empty | - | - | Error: "Password can NOT be empty..." |
 | Provided | Provided | Provided | Provided | Empty | - | Error: "User Type can NOT be empty..." |
 | Provided | Provided | Provided | Provided | Provided | Yes | Error: "User ID already exist..." |
-| Provided | Provided | Provided | Provided | Provided | No | Success: "User <ID> has been added ..." |
+| Provided | Provided | Provided | Provided | Provided | No | Success: "User \<ID\> has been added ..." |
 
 ## Source COBOL Reference
 

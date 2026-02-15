@@ -72,7 +72,7 @@ IF record found:
 | Lookup | Provided | Yes | Display user details, prompt PF5 to confirm |
 | Delete | Empty | - | Error: "User ID can NOT be empty..." |
 | Delete | Provided | No (deleted between lookup and delete) | Error: "User ID NOT found..." |
-| Delete | Provided | Yes | Success: "User <ID> has been deleted ..." |
+| Delete | Provided | Yes | Success: "User \<ID\> has been deleted ..." |
 
 ### Key Navigation
 
