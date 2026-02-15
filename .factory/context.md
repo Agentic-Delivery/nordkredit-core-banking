@@ -67,13 +67,17 @@ Core banking system for NordKredit AB, a mid-size Swedish bank. The system handl
 
 > Last updated: 2026-02-15
 
-- **Open issues:** 0 (factory just initialized)
-- **In progress:** 0
-- **Completed:** 0
+- **Open issues:** 1
+- **In progress:** 1 (#46 — Upgrade Delivery Factory v1.1.0 → v1.6.0)
+- **Completed:** 22
 
 ### Recently Completed
 
-- Factory initialization
+- #45 Enable GitHub Pages and trigger initial docs deployment
+- #43 Add workflow_dispatch trigger to docs deploy workflow
+- #42 Delete remaining stale branches after auto-delete enablement
+- #41 Enable auto-delete branches and clean up stale branches
+- #36 Create GitHub Actions workflow for docs site deployment
 
 ### Known Blockers
 
