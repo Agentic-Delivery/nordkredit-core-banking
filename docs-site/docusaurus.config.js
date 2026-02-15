@@ -12,8 +12,11 @@ const config = {
     v4: true,
   },
 
-  url: 'https://nordkredit-docs.example.com',
-  baseUrl: '/',
+  url: 'https://agentic-delivery.github.io',
+  baseUrl: '/nordkredit-core-banking/',
+
+  organizationName: 'Agentic-Delivery',
+  projectName: 'nordkredit-core-banking',
 
   onBrokenLinks: 'throw',
 
