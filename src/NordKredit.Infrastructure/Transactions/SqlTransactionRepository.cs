@@ -55,4 +55,29 @@ public class SqlTransactionRepository : ITransactionRepository
         await _dbContext.Transactions.AddAsync(transaction, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
+
+    public async Task<IReadOnlyList<Transaction>> GetPageAsync(
+        int pageSize,
+        string? startAfterTransactionId = null,
+        CancellationToken cancellationToken = default)
+    {
+        IQueryable<Transaction> query = _dbContext.Transactions.OrderBy(t => t.Id);
+
+        if (!string.IsNullOrEmpty(startAfterTransactionId))
+        {
+            query = query.Where(t => t.Id.CompareTo(startAfterTransactionId) > 0)
+                .OrderBy(t => t.Id);
+        }
+
+        return await query
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<Transaction?> GetLastTransactionAsync(CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Transactions
+            .OrderByDescending(t => t.Id)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
 }
