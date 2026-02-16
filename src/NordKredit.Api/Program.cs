@@ -14,6 +14,9 @@ builder.Services.AddScoped<TransactionAddService>();
 builder.Services.AddScoped<TransactionDetailService>();
 builder.Services.AddScoped<TransactionListService>();
 
+// Card Management domain services (COCRDSLC — card detail lookup)
+builder.Services.AddScoped<NordKredit.Domain.CardManagement.CardDetailService>();
+
 // Infrastructure bindings — Azure SQL repositories replace VSAM file I/O
 builder.Services.AddScoped<ITransactionRepository, SqlTransactionRepository>();
 builder.Services.AddScoped<ITransactionIdGenerator, SqlTransactionIdGenerator>();
