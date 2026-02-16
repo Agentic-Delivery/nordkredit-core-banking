@@ -48,13 +48,13 @@ public class TransactionListService
         var hasNextPage = records.Count > PageSize;
         var pageRecords = hasNextPage ? records.Take(PageSize) : records;
 
-        var items = pageRecords.Select(t => new TransactionListItem
+        List<TransactionListItem> items = [.. pageRecords.Select(t => new TransactionListItem
         {
             TransactionId = t.Id,
             Date = t.OriginationTimestamp,
             Description = t.Description,
             Amount = t.Amount
-        }).ToList();
+        })];
 
         string? nextCursor = hasNextPage && items.Count > 0
             ? items[^1].TransactionId

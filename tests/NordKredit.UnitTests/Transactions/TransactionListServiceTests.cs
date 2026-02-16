@@ -253,8 +253,8 @@ internal sealed class StubTransactionListRepository : ITransactionRepository
             query = query.Where(t => string.Compare(t.Id, cursor, StringComparison.Ordinal) > 0);
         }
 
-        var result = query.Take(pageSize).ToList();
-        return Task.FromResult<IReadOnlyList<Transaction>>(result);
+        IReadOnlyList<Transaction> result = [.. query.Take(pageSize)];
+        return Task.FromResult(result);
     }
 
     public Task<Transaction?> GetByIdAsync(string transactionId, CancellationToken cancellationToken = default)

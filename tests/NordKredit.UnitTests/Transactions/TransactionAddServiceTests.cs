@@ -409,7 +409,7 @@ internal sealed class StubTransactionRepository : ITransactionRepository
 
     public Task<IReadOnlyList<Transaction>> GetPageAsync(
         int pageSize, string? cursor = null, CancellationToken cancellationToken = default)
-        => Task.FromResult<IReadOnlyList<Transaction>>(_transactions.OrderBy(t => t.Id).Take(pageSize).ToList());
+        => Task.FromResult<IReadOnlyList<Transaction>>([.. _transactions.OrderBy(t => t.Id).Take(pageSize)]);
 
     public Task AddAsync(Transaction transaction, CancellationToken cancellationToken = default)
     {
