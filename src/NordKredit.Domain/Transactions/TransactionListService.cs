@@ -46,7 +46,7 @@ public class TransactionListService
             cancellationToken);
 
         var hasNextPage = records.Count > PageSize;
-        var pageRecords = hasNextPage ? records.Take(PageSize).ToList() : records;
+        var pageRecords = hasNextPage ? records.Take(PageSize) : records;
 
         var items = pageRecords.Select(t => new TransactionListItem
         {
