@@ -8,4 +8,5 @@ namespace NordKredit.Domain.Transactions;
 public interface ICardCrossReferenceRepository
 {
     Task<CardCrossReference?> GetByCardNumberAsync(string cardNumber, CancellationToken cancellationToken = default);
+    Task<CardCrossReference?> GetByAccountIdAsync(string accountId, CancellationToken cancellationToken = default);
 }

@@ -60,6 +60,9 @@ dotnet_diagnostic.IDE0290.severity = none
 csharp_style_var_elsewhere = true:suggestion
 dotnet_diagnostic.IDE0008.severity = suggestion
 
+# Sequential early-return validation — matches COBOL exit-on-first-error pattern
+dotnet_diagnostic.IDE0046.severity = suggestion
+
 [*.{json,yml,yaml}]
 indent_size = 2
 

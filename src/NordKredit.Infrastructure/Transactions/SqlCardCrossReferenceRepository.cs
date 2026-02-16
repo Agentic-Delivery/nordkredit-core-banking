@@ -23,4 +23,12 @@ public class SqlCardCrossReferenceRepository : ICardCrossReferenceRepository
         return await _dbContext.CardCrossReferences
             .FirstOrDefaultAsync(x => x.CardNumber == cardNumber, cancellationToken);
     }
+
+    public async Task<CardCrossReference?> GetByAccountIdAsync(
+        string accountId,
+        CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.CardCrossReferences
+            .FirstOrDefaultAsync(x => x.AccountId == accountId, cancellationToken);
+    }
 }
