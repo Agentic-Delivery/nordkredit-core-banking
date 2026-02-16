@@ -48,11 +48,9 @@ public class CardListService
         var filtered = ApplyFilters(records, accountId, cardNumber);
 
         var hasNextPage = filtered.Count > PageSize;
-        var pageRecords = hasNextPage
-            ? filtered.Take(PageSize).ToList()
-            : filtered;
+        var pageCards = hasNextPage ? filtered.GetRange(0, PageSize) : filtered;
 
-        if (pageRecords.Count == 0)
+        if (pageCards.Count == 0)
         {
             // COBOL: COCRDLIC.cbl:1139-1141 — 'NO RECORDS FOUND FOR THIS SEARCH CONDITION'
             return new CardListResponse
@@ -64,7 +62,7 @@ public class CardListService
             };
         }
 
-        var items = MapToItems(pageRecords);
+        var items = MapToItems(pageCards);
 
         return new CardListResponse
         {
@@ -101,14 +99,12 @@ public class CardListService
         var filtered = ApplyFilters(records, accountId, cardNumber);
 
         var hasPreviousPage = filtered.Count > PageSize;
-        var pageRecords = hasPreviousPage
-            ? filtered.Take(PageSize).ToList()
-            : filtered;
+        var pageCards = hasPreviousPage ? filtered.GetRange(0, PageSize) : filtered;
 
         // Reverse to ascending order (backward reads in descending)
-        pageRecords = [.. pageRecords.OrderBy(c => c.CardNumber)];
+        pageCards = [.. pageCards.OrderBy(c => c.CardNumber)];
 
-        if (pageRecords.Count == 0)
+        if (pageCards.Count == 0)
         {
             return new CardListResponse
             {
@@ -119,7 +115,7 @@ public class CardListService
             };
         }
 
-        var items = MapToItems(pageRecords);
+        var items = MapToItems(pageCards);
 
         return new CardListResponse
         {
