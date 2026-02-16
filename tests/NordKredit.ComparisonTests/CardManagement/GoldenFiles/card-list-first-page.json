@@ -1,0 +1,60 @@
+{
+  "_comment": "Golden file: Expected mainframe output for first page of card list (COCRDLIC — PROCESS-PAGE-FORWARD).",
+  "_cobolSource": "COCRDLIC.cbl:1123-1163 — 9000-READ-FORWARD, WS-MAX-SCREEN-LINES = 7",
+  "_businessRule": "CARD-BR-001",
+  "_regulation": "PSD2 Art. 97 (SCA), GDPR Art. 15 (right of access)",
+  "cards": [
+    {
+      "cardNumber": "4000000000000001",
+      "accountId": "12345678901",
+      "embossedName": "JOHN DOE",
+      "expirationDate": "2027-12-31",
+      "activeStatus": "Y"
+    },
+    {
+      "cardNumber": "4000000000000002",
+      "accountId": "12345678901",
+      "embossedName": "JANE DOE",
+      "expirationDate": "2028-06-15",
+      "activeStatus": "Y"
+    },
+    {
+      "cardNumber": "4000000000000003",
+      "accountId": "99999999999",
+      "embossedName": "ERIK SVENSSON",
+      "expirationDate": "2027-03-01",
+      "activeStatus": "N"
+    },
+    {
+      "cardNumber": "4000000000000004",
+      "accountId": "12345678901",
+      "embossedName": "ANNA LINDQVIST",
+      "expirationDate": "2029-01-31",
+      "activeStatus": "Y"
+    },
+    {
+      "cardNumber": "4000000000000005",
+      "accountId": "12345678901",
+      "embossedName": "KARL NILSSON",
+      "expirationDate": "2028-09-30",
+      "activeStatus": "Y"
+    },
+    {
+      "cardNumber": "4000000000000006",
+      "accountId": "12345678901",
+      "embossedName": "MARIA BERG",
+      "expirationDate": "2027-11-15",
+      "activeStatus": "N"
+    },
+    {
+      "cardNumber": "4000000000000007",
+      "accountId": "12345678901",
+      "embossedName": "PER HOLM",
+      "expirationDate": "2028-04-20",
+      "activeStatus": "Y"
+    }
+  ],
+  "hasNextPage": true,
+  "hasPreviousPage": false,
+  "pageSize": 7
+}

@@ -1,0 +1,18 @@
+{
+  "_comment": "Golden file: Expected mainframe output after successful card update (COCRDUPC — CHANGES-OKAYED-AND-DONE).",
+  "_cobolSource": "COCRDUPC.cbl:998-1000 (CHANGES-OKAYED-AND-DONE), 1420-1523 (write processing)",
+  "_businessRule": "CARD-BR-007, CARD-BR-008",
+  "_regulation": "PSD2 Art. 97 (SCA), FFFS 2014:5 Ch. 8 §4 (operational risk)",
+  "_knownDifferences": {
+    "concurrencyMechanism": "Mainframe uses field-by-field comparison (COCRDUPC.cbl:1498-1523). Migrated system uses SQL rowversion (ETag-based). Both achieve same outcome: detect concurrent modifications.",
+    "errorCollection": "Mainframe returns only the first validation error (WS-RETURN-MSG-OFF flag). Migrated system collects all errors simultaneously — an intentional improvement.",
+    "characterEncoding": "Mainframe uses EBCDIC with Swedish codepage. Migrated system uses Unicode (nvarchar) — supports Å, Ä, Ö plus additional Unicode letters.",
+    "expiryDayClamping": "Mainframe carries original day value unchanged. Migrated system clamps day to valid range when month/year change (e.g., Jan 31 → Feb 28)."
+  },
+  "cardNumber": "4000123456789012",
+  "accountId": "12345678901",
+  "embossedName": "JANE DOE",
+  "expirationDate": "2027-12-31",
+  "activeStatus": "Y",
+  "message": "Changes committed to database"
+}
