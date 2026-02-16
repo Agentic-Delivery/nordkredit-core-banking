@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using NordKredit.Domain.CardManagement;
 using NordKredit.Domain.Transactions;
+using TransactionCardCrossReference = NordKredit.Domain.Transactions.CardCrossReference;
 
 namespace NordKredit.Infrastructure;
 
@@ -14,10 +16,11 @@ public class NordKreditDbContext : DbContext
     {
     }
 
+    public DbSet<Card> Cards => Set<Card>();
     public DbSet<Transaction> Transactions => Set<Transaction>();
     public DbSet<DailyTransaction> DailyTransactions => Set<DailyTransaction>();
     public DbSet<TransactionCategoryBalance> TransactionCategoryBalances => Set<TransactionCategoryBalance>();
-    public DbSet<CardCrossReference> CardCrossReferences => Set<CardCrossReference>();
+    public DbSet<TransactionCardCrossReference> CardCrossReferences => Set<TransactionCardCrossReference>();
     public DbSet<Account> Accounts => Set<Account>();
     public DbSet<DailyReject> DailyRejects => Set<DailyReject>();
 
@@ -25,12 +28,45 @@ public class NordKreditDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        ConfigureCard(modelBuilder);
         ConfigureTransaction(modelBuilder);
         ConfigureDailyTransaction(modelBuilder);
         ConfigureTransactionCategoryBalance(modelBuilder);
         ConfigureCardCrossReference(modelBuilder);
         ConfigureAccount(modelBuilder);
         ConfigureDailyReject(modelBuilder);
+    }
+
+    /// <summary>
+    /// Card entity mapping. COBOL source: CVACT02Y.cpy (CARD-RECORD), 150 bytes.
+    /// VSAM CARDDAT (primary key = CARD-NUM), CARDAIX (alternate index = CARD-ACCT-ID).
+    /// Regulations: GDPR Art. 5(1)(c)(d), PSD2 Art. 97.
+    /// </summary>
+    private static void ConfigureCard(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Card>(entity =>
+        {
+            entity.ToTable("Cards");
+            entity.HasKey(e => e.CardNumber);
+
+            // COBOL: CARD-NUM PIC X(16) — primary key
+            entity.Property(e => e.CardNumber).HasMaxLength(16).IsRequired();
+            // COBOL: CARD-ACCT-ID PIC 9(11) — foreign key to account
+            entity.Property(e => e.AccountId).HasMaxLength(11).IsRequired();
+            // COBOL: CARD-CVV-CD PIC 9(03) — PCI-DSS review required
+            entity.Property(e => e.CvvCode).HasMaxLength(3).IsRequired();
+            // COBOL: CARD-EMBOSSED-NAME PIC X(50) — nvarchar for Swedish chars (Å, Ä, Ö)
+            entity.Property(e => e.EmbossedName).HasMaxLength(50).IsRequired();
+            // COBOL: CARD-EXPIRAION-DATE PIC X(10) — mapped to DateOnly
+            entity.Property(e => e.ExpirationDate).IsRequired();
+            // COBOL: CARD-ACTIVE-STATUS PIC X(01) — 'Y'/'N'
+            entity.Property(e => e.ActiveStatus).IsRequired();
+            // Optimistic concurrency — replaces COBOL field-by-field comparison
+            entity.Property(e => e.RowVersion).IsRowVersion();
+
+            // CARDAIX alternate index — enables lookup by account ID
+            entity.HasIndex(e => e.AccountId);
+        });
     }
 
     private static void ConfigureTransaction(ModelBuilder modelBuilder)
@@ -101,7 +137,7 @@ public class NordKreditDbContext : DbContext
 
     private static void ConfigureCardCrossReference(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<CardCrossReference>(entity =>
+        modelBuilder.Entity<TransactionCardCrossReference>(entity =>
         {
             entity.ToTable("CardCrossReferences");
             entity.HasKey(e => e.CardNumber);
@@ -111,6 +147,7 @@ public class NordKreditDbContext : DbContext
             entity.Property(e => e.AccountId).HasMaxLength(11).IsRequired();
 
             entity.HasIndex(e => e.AccountId);
+            entity.HasIndex(e => e.CustomerId);
         });
     }
 
