@@ -39,7 +39,7 @@ public class SqlCardCrossReferenceRepository : ICardCrossReferenceRepository
             .OrderBy(x => x.CardNumber)
             .ToListAsync(cancellationToken);
 
-        return entities.Select(MapToDomain).ToList();
+        return [.. entities.Select(MapToDomain)];
     }
 
     private static CardCrossReference MapToDomain(TransactionXref entity)
