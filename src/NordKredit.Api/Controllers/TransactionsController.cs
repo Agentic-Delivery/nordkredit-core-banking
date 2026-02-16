@@ -5,7 +5,7 @@ namespace NordKredit.Api.Controllers;
 
 /// <summary>
 /// REST API for transaction operations.
-/// Replaces COBOL CICS online transaction screens COTRN00C (list) and COTRN02C (add).
+/// Replaces COBOL CICS online transaction screens COTRN00C (list), COTRN01C (detail), and COTRN02C (add).
 /// Regulations: FFFS 2014:5 Ch.8 (accurate records), PSD2 Art.94 (transaction retention).
 /// </summary>
 [ApiController]
@@ -13,11 +13,16 @@ namespace NordKredit.Api.Controllers;
 public class TransactionsController : ControllerBase
 {
     private readonly TransactionAddService _addService;
+    private readonly TransactionDetailService _detailService;
     private readonly TransactionListService _listService;
 
-    public TransactionsController(TransactionAddService addService, TransactionListService listService)
+    public TransactionsController(
+        TransactionAddService addService,
+        TransactionDetailService detailService,
+        TransactionListService listService)
     {
         _addService = addService;
+        _detailService = detailService;
         _listService = listService;
     }
 
@@ -65,6 +70,37 @@ public class TransactionsController : ControllerBase
             cursor, fromTransactionId, cancellationToken);
 
         return Ok(result);
+    }
+
+    /// <summary>
+    /// Retrieves full detail of a single transaction by ID.
+    /// COBOL: COTRN01C.cbl:85-296 (CICS transaction CT01 — transaction detail view).
+    /// Card number is masked per PCI-DSS compliance.
+    /// Regulations: FFFS 2014:5 Ch.8, PSD2 Art.94, GDPR Art.15.
+    /// </summary>
+    /// <param name="transactionId">16-character transaction ID.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>200 OK with all 14 fields, 400 for empty ID, 404 if not found.</returns>
+    [HttpGet("{transactionId}")]
+    public async Task<IActionResult> GetTransaction(
+        string transactionId,
+        CancellationToken cancellationToken)
+    {
+        // COBOL: COTRN01C.cbl:176-178 — "Tran ID can NOT be empty..."
+        if (string.IsNullOrWhiteSpace(transactionId))
+        {
+            return BadRequest(new { Message = "Transaction ID cannot be empty" });
+        }
+
+        var detail = await _detailService.GetByIdAsync(transactionId, cancellationToken);
+
+        if (detail is null)
+        {
+            // COBOL: COTRN01C.cbl:286-292 — "Transaction ID NOT found..."
+            return NotFound(new { Message = "Transaction ID NOT found" });
+        }
+
+        return Ok(detail);
     }
 
     /// <summary>

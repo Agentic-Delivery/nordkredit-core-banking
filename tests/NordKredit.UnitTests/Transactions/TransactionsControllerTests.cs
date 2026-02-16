@@ -21,8 +21,9 @@ public class TransactionsControllerTests
     {
         var validationService = new TransactionValidationService(_crossRefRepo);
         var addService = new TransactionAddService(validationService, _idGenerator, _transactionRepo);
+        var detailService = new TransactionDetailService(_transactionRepo);
         var listService = new TransactionListService(_listRepo);
-        _controller = new TransactionsController(addService, listService);
+        _controller = new TransactionsController(addService, detailService, listService);
     }
 
     private static TransactionAddRequest CreateValidRequest() => new()
@@ -184,6 +185,113 @@ public class TransactionsControllerTests
         var result = await _controller.GetLastTransaction(CancellationToken.None);
 
         Assert.IsType<NotFoundObjectResult>(result);
+    }
+
+    // ===================================================================
+    // GET /api/transactions/{id} — Transaction Detail (COTRN01C.cbl:85-296)
+    // Regulations: FFFS 2014:5 Ch.8, PSD2 Art.94, GDPR Art.15
+    // ===================================================================
+
+    [Fact]
+    public async Task GetById_ExistingTransaction_Returns200Ok()
+    {
+        // GIVEN transaction "0000000000000042" exists
+        _transactionRepo.Add(new Transaction
+        {
+            Id = "0000000000000042",
+            TypeCode = "SA",
+            CategoryCode = 5010,
+            Source = "ONLINE",
+            Description = "Monthly rent payment",
+            Amount = 12500.00m,
+            MerchantId = 123456789,
+            MerchantName = "Stockholm Housing AB",
+            MerchantCity = "Stockholm",
+            MerchantZip = "11122",
+            CardNumber = "4000123456780042",
+            OriginationTimestamp = new DateTime(2026, 1, 15, 10, 30, 0),
+            ProcessingTimestamp = new DateTime(2026, 1, 15, 14, 45, 0)
+        });
+
+        // WHEN GET /api/transactions/0000000000000042 is called
+        var result = await _controller.GetTransaction("0000000000000042", CancellationToken.None);
+
+        // THEN 200 OK
+        Assert.IsType<OkObjectResult>(result);
+    }
+
+    [Fact]
+    public async Task GetById_ExistingTransaction_ReturnsAll14FieldsWithMaskedCard()
+    {
+        // GIVEN transaction "0000000000000042" exists
+        _transactionRepo.Add(new Transaction
+        {
+            Id = "0000000000000042",
+            TypeCode = "SA",
+            CategoryCode = 5010,
+            Source = "ONLINE",
+            Description = "Monthly rent payment",
+            Amount = 12500.00m,
+            MerchantId = 123456789,
+            MerchantName = "Stockholm Housing AB",
+            MerchantCity = "Stockholm",
+            MerchantZip = "11122",
+            CardNumber = "4000123456780042",
+            OriginationTimestamp = new DateTime(2026, 1, 15, 10, 30, 0),
+            ProcessingTimestamp = new DateTime(2026, 1, 15, 14, 45, 0)
+        });
+
+        // WHEN GET /api/transactions/0000000000000042 is called
+        var result = await _controller.GetTransaction("0000000000000042", CancellationToken.None);
+
+        // THEN all 14 fields populated with card number masked
+        var ok = Assert.IsType<OkObjectResult>(result);
+        var body = Assert.IsType<TransactionDetailResponse>(ok.Value);
+        Assert.Equal("0000000000000042", body.TransactionId);
+        Assert.Equal("************0042", body.CardNumber);
+        Assert.Equal("SA", body.TypeCode);
+        Assert.Equal(5010, body.CategoryCode);
+        Assert.Equal("ONLINE", body.Source);
+        Assert.Equal(12500.00m, body.Amount);
+        Assert.Equal("Monthly rent payment", body.Description);
+        Assert.Equal(new DateTime(2026, 1, 15, 10, 30, 0), body.OriginationTimestamp);
+        Assert.Equal(new DateTime(2026, 1, 15, 14, 45, 0), body.ProcessingTimestamp);
+        Assert.Equal(123456789, body.MerchantId);
+        Assert.Equal("Stockholm Housing AB", body.MerchantName);
+        Assert.Equal("Stockholm", body.MerchantCity);
+        Assert.Equal("11122", body.MerchantZip);
+    }
+
+    [Fact]
+    public async Task GetById_NonExistentTransaction_Returns404NotFound()
+    {
+        // GIVEN no transaction with ID "9999999999999999" exists
+        // WHEN GET /api/transactions/9999999999999999 is called
+        var result = await _controller.GetTransaction("9999999999999999", CancellationToken.None);
+
+        // THEN 404 with "Transaction ID NOT found"
+        var notFound = Assert.IsType<NotFoundObjectResult>(result);
+        var body = notFound.Value;
+        Assert.NotNull(body);
+        var message = body.GetType().GetProperty("Message")?.GetValue(body)?.ToString();
+        Assert.Equal("Transaction ID NOT found", message);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public async Task GetById_EmptyOrWhitespace_Returns400BadRequest(string transactionId)
+    {
+        // GIVEN empty/whitespace transaction ID
+        // WHEN GET /api/transactions/{id} is called
+        var result = await _controller.GetTransaction(transactionId, CancellationToken.None);
+
+        // THEN 400 with "Transaction ID cannot be empty"
+        var badRequest = Assert.IsType<BadRequestObjectResult>(result);
+        var body = badRequest.Value;
+        Assert.NotNull(body);
+        var message = body.GetType().GetProperty("Message")?.GetValue(body)?.ToString();
+        Assert.Equal("Transaction ID cannot be empty", message);
     }
 
     // ===================================================================
