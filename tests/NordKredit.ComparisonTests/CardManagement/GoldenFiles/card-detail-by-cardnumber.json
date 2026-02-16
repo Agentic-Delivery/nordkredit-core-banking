@@ -1,0 +1,11 @@
+{
+  "_comment": "Golden file: Expected mainframe output for card detail lookup by card number (COCRDSLC — primary key READ).",
+  "_cobolSource": "COCRDSLC.cbl:736-774 — 9100-GETCARD-BYACCTCARD (READ CARDDAT)",
+  "_businessRule": "CARD-BR-003, CARD-BR-009",
+  "_regulation": "PSD2 Art. 97 (SCA), GDPR Art. 15 (right of access)",
+  "cardNumber": "4000123456789012",
+  "accountId": "12345678901",
+  "embossedName": "JOHN DOE",
+  "expirationDate": "2027-12-31",
+  "activeStatus": "Y"
+}

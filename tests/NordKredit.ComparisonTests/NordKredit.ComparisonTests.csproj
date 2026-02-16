@@ -21,4 +21,8 @@
     <ProjectReference Include="..\..\src\NordKredit.Infrastructure\NordKredit.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="CardManagement\GoldenFiles\*.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>
