@@ -12,18 +12,15 @@ namespace NordKredit.Domain.Transactions;
 /// </summary>
 public partial class TransactionCreditValidationService
 {
-    private readonly ICardCrossReferenceRepository _cardCrossReferenceRepository;
     private readonly IAccountRepository _accountRepository;
     private readonly IDailyRejectRepository _dailyRejectRepository;
     private readonly ILogger<TransactionCreditValidationService> _logger;
 
     public TransactionCreditValidationService(
-        ICardCrossReferenceRepository cardCrossReferenceRepository,
         IAccountRepository accountRepository,
         IDailyRejectRepository dailyRejectRepository,
         ILogger<TransactionCreditValidationService> logger)
     {
-        _cardCrossReferenceRepository = cardCrossReferenceRepository;
         _accountRepository = accountRepository;
         _dailyRejectRepository = dailyRejectRepository;
         _logger = logger;

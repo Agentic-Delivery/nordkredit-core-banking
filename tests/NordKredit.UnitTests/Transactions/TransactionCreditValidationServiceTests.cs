@@ -14,7 +14,6 @@ namespace NordKredit.UnitTests.Transactions;
 /// </summary>
 public class TransactionCreditValidationServiceTests
 {
-    private readonly StubCardCrossReferenceRepository2 _crossRefRepo = new();
     private readonly StubAccountRepository2 _accountRepo = new();
     private readonly StubDailyRejectRepository _rejectRepo = new();
     private readonly ILogger<TransactionCreditValidationService> _logger =
@@ -24,7 +23,6 @@ public class TransactionCreditValidationServiceTests
     public TransactionCreditValidationServiceTests()
     {
         _sut = new TransactionCreditValidationService(
-            _crossRefRepo,
             _accountRepo,
             _rejectRepo,
             _logger);
@@ -483,21 +481,6 @@ public class TransactionCreditValidationServiceTests
 // ===================================================================
 // Test doubles
 // ===================================================================
-
-internal sealed class StubCardCrossReferenceRepository2 : ICardCrossReferenceRepository
-{
-    private readonly Dictionary<string, CardCrossReference> _byCardNumber = [];
-    private readonly Dictionary<string, CardCrossReference> _byAccountId = [];
-
-    public void AddByCardNumber(string cardNumber, CardCrossReference xref)
-        => _byCardNumber[cardNumber] = xref;
-
-    public Task<CardCrossReference?> GetByCardNumberAsync(string cardNumber, CancellationToken cancellationToken = default)
-        => Task.FromResult(_byCardNumber.GetValueOrDefault(cardNumber));
-
-    public Task<CardCrossReference?> GetByAccountIdAsync(string accountId, CancellationToken cancellationToken = default)
-        => Task.FromResult(_byAccountId.GetValueOrDefault(accountId));
-}
 
 internal sealed class StubAccountRepository2 : IAccountRepository
 {

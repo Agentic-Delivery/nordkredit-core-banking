@@ -15,7 +15,6 @@ namespace NordKredit.UnitTests.Batch;
 /// </summary>
 public class TransactionCreditValidationFunctionTests
 {
-    private readonly StubCardCrossReferenceRepository2 _crossRefRepo = new();
     private readonly StubAccountRepository2 _accountRepo = new();
     private readonly StubDailyRejectRepository _rejectRepo = new();
     private readonly ILogger<TransactionCreditValidationService> _serviceLogger =
@@ -26,7 +25,6 @@ public class TransactionCreditValidationFunctionTests
     private TransactionCreditValidationFunction CreateFunction()
     {
         var service = new TransactionCreditValidationService(
-            _crossRefRepo,
             _accountRepo,
             _rejectRepo,
             _serviceLogger);
