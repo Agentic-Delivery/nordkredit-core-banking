@@ -1,3 +1,4 @@
+using NordKredit.Domain.CardManagement;
 using NordKredit.Domain.Transactions;
 using NordKredit.Infrastructure;
 using NordKredit.Infrastructure.Transactions;
@@ -17,10 +18,11 @@ builder.Services.AddScoped<TransactionListService>();
 // Infrastructure bindings — Azure SQL repositories replace VSAM file I/O
 builder.Services.AddScoped<ITransactionRepository, SqlTransactionRepository>();
 builder.Services.AddScoped<ITransactionIdGenerator, SqlTransactionIdGenerator>();
-builder.Services.AddScoped<ICardCrossReferenceRepository, SqlCardCrossReferenceRepository>();
+builder.Services.AddScoped<NordKredit.Domain.Transactions.ICardCrossReferenceRepository, SqlCardCrossReferenceRepository>();
 
-// Card Management domain — Azure SQL repositories for card entity operations
-builder.Services.AddScoped<NordKredit.Domain.CardManagement.ICardRepository, CardMgmtSqlCardRepo>();
+// Card Management domain — services and Azure SQL repositories
+builder.Services.AddScoped<CardListService>();
+builder.Services.AddScoped<ICardRepository, CardMgmtSqlCardRepo>();
 builder.Services.AddScoped<NordKredit.Domain.CardManagement.ICardCrossReferenceRepository, CardMgmtSqlXrefRepo>();
 
 // EF Core DbContext — replaces Db2 for z/OS
