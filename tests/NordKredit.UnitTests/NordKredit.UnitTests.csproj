@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\NordKredit.Domain\NordKredit.Domain.csproj" />
+    <ProjectReference Include="..\..\src\NordKredit.Functions\NordKredit.Functions.csproj" />
   </ItemGroup>
 
 </Project>
