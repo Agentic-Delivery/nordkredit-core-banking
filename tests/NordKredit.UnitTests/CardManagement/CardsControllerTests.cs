@@ -6,8 +6,9 @@ namespace NordKredit.UnitTests.CardManagement;
 
 /// <summary>
 /// Unit tests for CardsController HTTP response mapping.
-/// COBOL source: COCRDSLC.cbl:608-812 — card detail lookup.
-/// Regulations: PSD2 Art. 97 (SCA), GDPR Art. 15 (right of access), FFFS 2014:5 Ch. 8 section 4.
+/// COBOL source: COCRDLIC.cbl:1123-1411 (list), COCRDSLC.cbl:608-812 (detail).
+/// CARD-BR-001: Pagination and filtering. CARD-BR-002: Selection routing.
+/// Regulations: PSD2 Art. 97 (SCA), GDPR Art. 15 (right of access), FFFS 2014:5 Ch. 8 §4.
 /// </summary>
 public class CardsControllerTests
 {
@@ -17,7 +18,176 @@ public class CardsControllerTests
     public CardsControllerTests()
     {
         var detailService = new CardDetailService(_cardRepo);
-        _controller = new CardsController(detailService);
+        var listService = new CardListService(_cardRepo);
+        _controller = new CardsController(detailService, listService);
+    }
+
+    // ===================================================================
+    // GET /api/cards — List cards (CARD-BR-001)
+    // COCRDLIC.cbl:1123-1411 — pagination and filtering
+    // ===================================================================
+
+    [Fact]
+    public async Task ListCards_NoFiltersNoCursor_Returns200Ok()
+    {
+        // GIVEN 15 cards exist
+        AddCards(15);
+
+        // WHEN GET /api/cards
+        var result = await _controller.ListCards(null, null, null, null, CancellationToken.None);
+
+        // THEN 200 OK
+        Assert.IsType<OkObjectResult>(result);
+    }
+
+    [Fact]
+    public async Task ListCards_NoFiltersNoCursor_ReturnsFirst7Cards()
+    {
+        // GIVEN 15 cards exist
+        AddCards(15);
+
+        // WHEN GET /api/cards
+        var result = await _controller.ListCards(null, null, null, null, CancellationToken.None);
+
+        // THEN first 7 cards returned with pagination metadata
+        var ok = Assert.IsType<OkObjectResult>(result);
+        var body = Assert.IsType<CardListResponse>(ok.Value);
+        Assert.Equal(7, body.Cards.Count);
+        Assert.True(body.HasNextPage);
+        Assert.False(body.HasPreviousPage);
+        Assert.NotNull(body.FirstCardNumber);
+        Assert.NotNull(body.LastCardNumber);
+    }
+
+    [Fact]
+    public async Task ListCards_WithAfterCursor_ReturnsNextPage()
+    {
+        // GIVEN 15 cards exist
+        AddCards(15);
+
+        // WHEN GET /api/cards?afterCardNumber=4000000000000007
+        var result = await _controller.ListCards("4000000000000007", null, null, null, CancellationToken.None);
+
+        // THEN next page of cards returned
+        var ok = Assert.IsType<OkObjectResult>(result);
+        var body = Assert.IsType<CardListResponse>(ok.Value);
+        Assert.Equal(7, body.Cards.Count);
+        Assert.True(body.HasPreviousPage);
+    }
+
+    [Fact]
+    public async Task ListCards_WithBeforeCursor_ReturnsPreviousPage()
+    {
+        // GIVEN 15 cards exist
+        AddCards(15);
+
+        // WHEN GET /api/cards?beforeCardNumber=4000000000000008
+        var result = await _controller.ListCards(null, "4000000000000008", null, null, CancellationToken.None);
+
+        // THEN previous page of cards returned
+        var ok = Assert.IsType<OkObjectResult>(result);
+        var body = Assert.IsType<CardListResponse>(ok.Value);
+        Assert.Equal(7, body.Cards.Count);
+    }
+
+    [Fact]
+    public async Task ListCards_FilterByAccount_ReturnsOnlyMatchingCards()
+    {
+        // GIVEN cards for two accounts
+        _cardRepo.AddCard(CreateTestCard("4000000000000001", "12345678901"));
+        _cardRepo.AddCard(CreateTestCard("4000000000000002", "99999999999"));
+        _cardRepo.AddCard(CreateTestCard("4000000000000003", "12345678901"));
+
+        // WHEN GET /api/cards?accountId=12345678901
+        var result = await _controller.ListCards(null, null, "12345678901", null, CancellationToken.None);
+
+        // THEN only cards for that account
+        var ok = Assert.IsType<OkObjectResult>(result);
+        var body = Assert.IsType<CardListResponse>(ok.Value);
+        Assert.Equal(2, body.Cards.Count);
+        Assert.All(body.Cards, c => Assert.Equal("12345678901", c.AccountId));
+    }
+
+    [Fact]
+    public async Task ListCards_FilterByBothAccountAndCard_ReturnsMatchingBoth()
+    {
+        // GIVEN cards with different accounts and numbers
+        _cardRepo.AddCard(CreateTestCard("4000123456789012", "12345678901"));
+        _cardRepo.AddCard(CreateTestCard("4000123456789099", "12345678901"));
+        _cardRepo.AddCard(CreateTestCard("4000999999999999", "99999999999"));
+
+        // WHEN GET /api/cards?accountId=12345678901&cardNumber=4000123456789012
+        var result = await _controller.ListCards(null, null, "12345678901", "4000123456789012", CancellationToken.None);
+
+        // THEN only card matching BOTH filters
+        var ok = Assert.IsType<OkObjectResult>(result);
+        var body = Assert.IsType<CardListResponse>(ok.Value);
+        Assert.Single(body.Cards);
+        Assert.Equal("4000123456789012", body.Cards[0].CardNumber);
+        Assert.Equal("12345678901", body.Cards[0].AccountId);
+    }
+
+    [Fact]
+    public async Task ListCards_NoMatchingRecords_ReturnsEmptyWithMessage()
+    {
+        // GIVEN no cards for account "99999999999"
+        _cardRepo.AddCard(CreateTestCard("4000000000000001", "12345678901"));
+
+        // WHEN GET /api/cards?accountId=99999999999
+        var result = await _controller.ListCards(null, null, "99999999999", null, CancellationToken.None);
+
+        // THEN empty array with message
+        var ok = Assert.IsType<OkObjectResult>(result);
+        var body = Assert.IsType<CardListResponse>(ok.Value);
+        Assert.Empty(body.Cards);
+        Assert.Equal("NO RECORDS FOUND FOR THIS SEARCH CONDITION", body.Message);
+    }
+
+    [Fact]
+    public async Task ListCards_InvalidAccountFilter_Returns400()
+    {
+        // GIVEN invalid account filter "ABC"
+        // WHEN GET /api/cards?accountId=ABC
+        var result = await _controller.ListCards(null, null, "ABC", null, CancellationToken.None);
+
+        // THEN 400 Bad Request with validation error
+        var badRequest = Assert.IsType<BadRequestObjectResult>(result);
+        Assert.Equal(400, badRequest.StatusCode);
+    }
+
+    [Fact]
+    public async Task ListCards_InvalidCardNumberFilter_Returns400()
+    {
+        // GIVEN invalid card number filter "XYZ"
+        // WHEN GET /api/cards?cardNumber=XYZ
+        var result = await _controller.ListCards(null, null, null, "XYZ", CancellationToken.None);
+
+        // THEN 400 Bad Request
+        var badRequest = Assert.IsType<BadRequestObjectResult>(result);
+        Assert.Equal(400, badRequest.StatusCode);
+    }
+
+    // ===================================================================
+    // CARD-BR-002: Selection routing ('S' → GET detail, 'U' → PUT update)
+    // These are documented through the existing GET/PUT endpoints.
+    // 'S' maps to GET /api/cards/{cardNumber}
+    // 'U' maps to PUT /api/cards/{cardNumber}
+    // The list response provides cardNumber for URL construction.
+    // ===================================================================
+
+    [Fact]
+    public async Task ListCards_ResponseContainsCardNumbersForBr002Routing()
+    {
+        // GIVEN cards exist (CARD-BR-002: list provides card numbers for selection)
+        _cardRepo.AddCard(CreateTestCard("4000123456789012", "12345678901"));
+
+        // WHEN GET /api/cards
+        var result = await _controller.ListCards(null, null, null, null, CancellationToken.None);
+
+        // THEN each card has cardNumber for 'S' → GET /api/cards/{cardNumber} routing
+        var ok = Assert.IsType<OkObjectResult>(result);
+        var body = Assert.IsType<CardListResponse>(ok.Value);
+        Assert.Equal("4000123456789012", body.Cards[0].CardNumber);
     }
 
     // ===================================================================
@@ -138,110 +308,18 @@ public class CardsControllerTests
     }
 
     // ===================================================================
-    // GET /api/cards?accountId={id} — 200 OK (COCRDSLC.cbl:779-812)
-    // ===================================================================
-
-    [Fact]
-    public async Task GetCardByAccount_ExistingAccount_Returns200Ok()
-    {
-        // GIVEN account "12345678901" has cards
-        _cardRepo.AddCard(CreateTestCard());
-
-        // WHEN GET /api/cards?accountId=12345678901
-        var result = await _controller.GetCardByAccount("12345678901", CancellationToken.None);
-
-        // THEN 200 OK with card detail
-        Assert.IsType<OkObjectResult>(result);
-    }
-
-    [Fact]
-    public async Task GetCardByAccount_MultipleCards_ReturnsFirstByKeyOrder()
-    {
-        // GIVEN account "12345678901" has multiple cards
-        _cardRepo.AddCard(CreateTestCard("4000123456789012", "12345678901"));
-        _cardRepo.AddCard(CreateTestCard("4000123456789099", "12345678901"));
-
-        // WHEN GET /api/cards?accountId=12345678901
-        var result = await _controller.GetCardByAccount("12345678901", CancellationToken.None);
-
-        // THEN first card by key order is returned (COBOL: CICS READ returns first match)
-        var ok = Assert.IsType<OkObjectResult>(result);
-        var body = Assert.IsType<CardDetailResponse>(ok.Value);
-        Assert.Equal("4000123456789012", body.CardNumber);
-    }
-
-    // ===================================================================
-    // GET /api/cards?accountId={id} — 404 Not Found
-    // ===================================================================
-
-    [Fact]
-    public async Task GetCardByAccount_NoCardsForAccount_Returns404()
-    {
-        // GIVEN no cards for account "99999999999"
-        // WHEN GET /api/cards?accountId=99999999999
-        var result = await _controller.GetCardByAccount("99999999999", CancellationToken.None);
-
-        // THEN 404 with "Did not find cards for this search condition"
-        var notFound = Assert.IsType<NotFoundObjectResult>(result);
-        var body = notFound.Value;
-        Assert.NotNull(body);
-        var message = body.GetType().GetProperty("Message")?.GetValue(body)?.ToString();
-        Assert.Equal("Did not find cards for this search condition", message);
-    }
-
-    // ===================================================================
-    // GET /api/cards?accountId={id} — 400 Bad Request (validation errors)
-    // COBOL: COCRDSLC.cbl:647-683 — 2210-EDIT-ACCOUNT
-    // ===================================================================
-
-    [Fact]
-    public async Task GetCardByAccount_InvalidAccountId_Returns400()
-    {
-        // GIVEN invalid account ID "ABC12345678"
-        // WHEN GET /api/cards?accountId=ABC12345678
-        var result = await _controller.GetCardByAccount("ABC12345678", CancellationToken.None);
-
-        // THEN 400 with "ACCOUNT FILTER,IF SUPPLIED MUST BE A 11 DIGIT NUMBER"
-        var badRequest = Assert.IsType<BadRequestObjectResult>(result);
-        var body = badRequest.Value;
-        Assert.NotNull(body);
-        var message = body.GetType().GetProperty("Message")?.GetValue(body)?.ToString();
-        Assert.Equal("ACCOUNT FILTER,IF SUPPLIED MUST BE A 11 DIGIT NUMBER", message);
-    }
-
-    [Fact]
-    public async Task GetCardByAccount_MissingAccountId_Returns400()
-    {
-        // GIVEN no accountId parameter
-        // WHEN GET /api/cards
-        var result = await _controller.GetCardByAccount(null, CancellationToken.None);
-
-        // THEN 400 with "Account number not provided"
-        var badRequest = Assert.IsType<BadRequestObjectResult>(result);
-        var body = badRequest.Value;
-        Assert.NotNull(body);
-        var message = body.GetType().GetProperty("Message")?.GetValue(body)?.ToString();
-        Assert.Equal("Account number not provided", message);
-    }
-
-    [Fact]
-    public async Task GetCardByAccount_EmptyAccountId_Returns400()
-    {
-        // GIVEN empty accountId
-        // WHEN GET /api/cards?accountId=
-        var result = await _controller.GetCardByAccount("", CancellationToken.None);
-
-        // THEN 400 with "Account number not provided"
-        var badRequest = Assert.IsType<BadRequestObjectResult>(result);
-        var body = badRequest.Value;
-        Assert.NotNull(body);
-        var message = body.GetType().GetProperty("Message")?.GetValue(body)?.ToString();
-        Assert.Equal("Account number not provided", message);
-    }
-
-    // ===================================================================
     // Helpers
     // ===================================================================
+
+    private void AddCards(int count)
+    {
+        for (int i = 1; i <= count; i++)
+        {
+            _cardRepo.AddCard(CreateTestCard(
+                $"4000000000000{i:D3}",
+                "12345678901"));
+        }
+    }
 
     private static Card CreateTestCard(
         string cardNumber = "4000123456789012",
@@ -257,7 +335,7 @@ public class CardsControllerTests
         };
 
     /// <summary>
-    /// In-memory stub for ICardRepository.
+    /// In-memory stub for ICardRepository with keyset pagination support.
     /// </summary>
     internal sealed class StubCardRepository : ICardRepository
     {
@@ -274,11 +352,27 @@ public class CardsControllerTests
             return Task.FromResult(result);
         }
 
-        public Task<IReadOnlyList<Card>> GetPageForwardAsync(int pageSize, string? startAfterCardNumber = null, CancellationToken cancellationToken = default) =>
-            Task.FromResult<IReadOnlyList<Card>>([]);
+        public Task<IReadOnlyList<Card>> GetPageForwardAsync(int pageSize, string? startAfterCardNumber = null, CancellationToken cancellationToken = default)
+        {
+            var query = _cards.OrderBy(c => c.CardNumber).AsEnumerable();
+            if (!string.IsNullOrEmpty(startAfterCardNumber))
+            {
+                query = query.Where(c => string.Compare(c.CardNumber, startAfterCardNumber, StringComparison.Ordinal) > 0);
+            }
+            IReadOnlyList<Card> result = [.. query.Take(pageSize)];
+            return Task.FromResult(result);
+        }
 
-        public Task<IReadOnlyList<Card>> GetPageBackwardAsync(int pageSize, string? startBeforeCardNumber = null, CancellationToken cancellationToken = default) =>
-            Task.FromResult<IReadOnlyList<Card>>([]);
+        public Task<IReadOnlyList<Card>> GetPageBackwardAsync(int pageSize, string? startBeforeCardNumber = null, CancellationToken cancellationToken = default)
+        {
+            var query = _cards.OrderByDescending(c => c.CardNumber).AsEnumerable();
+            if (!string.IsNullOrEmpty(startBeforeCardNumber))
+            {
+                query = query.Where(c => string.Compare(c.CardNumber, startBeforeCardNumber, StringComparison.Ordinal) < 0);
+            }
+            IReadOnlyList<Card> result = [.. query.Take(pageSize)];
+            return Task.FromResult(result);
+        }
 
         public Task UpdateAsync(Card card, CancellationToken cancellationToken = default) =>
             Task.CompletedTask;
