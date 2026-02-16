@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using NordKredit.Domain.CardManagement;
 using NordKredit.Domain.Transactions;
+using CardMgmtCrossRef = NordKredit.Domain.CardManagement.CardCrossReference;
 
 namespace NordKredit.Infrastructure;
 
@@ -21,6 +23,10 @@ public class NordKreditDbContext : DbContext
     public DbSet<Account> Accounts => Set<Account>();
     public DbSet<DailyReject> DailyRejects => Set<DailyReject>();
 
+    // Card Management domain
+    public DbSet<Card> Cards => Set<Card>();
+    public DbSet<CardMgmtCrossRef> CardManagementCrossReferences => Set<CardMgmtCrossRef>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -31,6 +37,8 @@ public class NordKreditDbContext : DbContext
         ConfigureCardCrossReference(modelBuilder);
         ConfigureAccount(modelBuilder);
         ConfigureDailyReject(modelBuilder);
+        ConfigureCard(modelBuilder);
+        ConfigureCardManagementCrossReference(modelBuilder);
     }
 
     private static void ConfigureTransaction(ModelBuilder modelBuilder)
