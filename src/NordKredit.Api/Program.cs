@@ -14,7 +14,8 @@ builder.Services.AddScoped<TransactionAddService>();
 builder.Services.AddScoped<TransactionDetailService>();
 builder.Services.AddScoped<TransactionListService>();
 
-// Card Management domain services (COCRDSLC — card detail lookup)
+// Card Management domain services (COCRDLIC — card list, COCRDSLC — card detail)
+builder.Services.AddScoped<NordKredit.Domain.CardManagement.CardListService>();
 builder.Services.AddScoped<NordKredit.Domain.CardManagement.CardDetailService>();
 
 // Infrastructure bindings — Azure SQL repositories replace VSAM file I/O
