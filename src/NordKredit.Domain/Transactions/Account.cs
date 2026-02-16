@@ -28,4 +28,11 @@ public class Account
 
     /// <summary>Current cycle debit total. COBOL: ACCT-CURR-CYC-DEBIT PIC S9(10)V99. Maps to SQL decimal(12,2).</summary>
     public decimal CurrentCycleDebit { get; set; }
+
+    /// <summary>
+    /// Account expiration date. COBOL: ACCT-EXPIRAION-DATE (sic — typo in COBOL source).
+    /// Used by CBTRN02C.cbl:414-420 for account expiration validation.
+    /// Null means no expiration — account never expires.
+    /// </summary>
+    public DateTime? ExpirationDate { get; set; }
 }
