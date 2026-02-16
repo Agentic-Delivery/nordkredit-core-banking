@@ -6,9 +6,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-// Transaction domain services (COTRN02C.cbl — online transaction processing)
+// Transaction domain services (COTRN00C/01C/02C — online transaction processing)
 builder.Services.AddScoped<TransactionValidationService>();
 builder.Services.AddScoped<TransactionAddService>();
+builder.Services.AddScoped<TransactionDetailService>();
 builder.Services.AddScoped<TransactionListService>();
 
 // Infrastructure bindings — Azure SQL repositories replace VSAM file I/O
