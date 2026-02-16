@@ -80,8 +80,18 @@ public class SqlCardRepository : ICardRepository
     /// <inheritdoc />
     public async Task UpdateAsync(Card card, CancellationToken cancellationToken = default)
     {
-        // Optimistic concurrency via rowversion — DbUpdateConcurrencyException on conflict
-        _dbContext.Cards.Update(card);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        // Optimistic concurrency via rowversion — translates EF Core's
+        // DbUpdateConcurrencyException to domain-level ConcurrencyConflictException.
+        // COBOL: COCRDUPC.cbl:1427-1449 — READ with UPDATE lock + RESP check.
+        try
+        {
+            _dbContext.Cards.Update(card);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            throw new ConcurrencyConflictException(
+                "Record changed by some one else. Please review", ex);
+        }
     }
 }

@@ -19,7 +19,8 @@ public class CardsControllerTests
     {
         var detailService = new CardDetailService(_cardRepo);
         var listService = new CardListService(_cardRepo);
-        _controller = new CardsController(detailService, listService);
+        var updateService = new CardUpdateService(_cardRepo);
+        _controller = new CardsController(detailService, listService, updateService);
     }
 
     // ===================================================================

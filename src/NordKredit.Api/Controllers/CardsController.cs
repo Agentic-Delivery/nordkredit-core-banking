@@ -5,8 +5,9 @@ namespace NordKredit.Api.Controllers;
 
 /// <summary>
 /// REST API for card management operations.
-/// Replaces COBOL CICS programs COCRDLIC (list) and COCRDSLC (detail) with REST endpoints.
-/// COBOL source: COCRDLIC.cbl:1123-1411 (pagination/filtering), COCRDSLC.cbl:608-812 (detail).
+/// Replaces COBOL CICS programs COCRDLIC (list), COCRDSLC (detail), and COCRDUPC (update).
+/// COBOL source: COCRDLIC.cbl:1123-1411 (pagination/filtering), COCRDSLC.cbl:608-812 (detail),
+///               COCRDUPC.cbl:275-1523 (card update with state machine and concurrency).
 /// Regulations: PSD2 Art. 97 (SCA), GDPR Art. 15 (right of access), FFFS 2014:5 Ch. 8 §4.
 /// </summary>
 [ApiController]
@@ -15,11 +16,16 @@ public class CardsController : ControllerBase
 {
     private readonly CardDetailService _detailService;
     private readonly CardListService _listService;
+    private readonly CardUpdateService _updateService;
 
-    public CardsController(CardDetailService detailService, CardListService listService)
+    public CardsController(
+        CardDetailService detailService,
+        CardListService listService,
+        CardUpdateService updateService)
     {
         _detailService = detailService;
         _listService = listService;
+        _updateService = updateService;
     }
 
     /// <summary>
@@ -103,4 +109,99 @@ public class CardsController : ControllerBase
 
         return Ok(detail);
     }
+
+    /// <summary>
+    /// Updates a card record with optimistic concurrency control.
+    /// Replaces COBOL CICS program COCRDUPC state machine:
+    ///   SHOW-DETAILS → GET (returns ETag)
+    ///   CHANGES-OK-NOT-CONFIRMED + PF5 → PUT with If-Match header
+    ///   CHANGES-OKAYED-AND-DONE → 200 response
+    ///   DATA-WAS-CHANGED-BEFORE-UPDATE → 409 Conflict
+    /// COBOL source: COCRDUPC.cbl:275-290 (state machine), 429-543 (main EVALUATE),
+    ///               948-1027 (action decisions), 1420-1523 (write processing + concurrency).
+    /// Business rules: CARD-BR-007 (state machine), CARD-BR-008 (optimistic concurrency).
+    /// Regulations: PSD2 Art. 97 (SCA), FFFS 2014:5 Ch. 8 §4 (operational risk management).
+    /// </summary>
+    [HttpPut("{cardNumber}")]
+    public async Task<IActionResult> UpdateCard(
+        string cardNumber,
+        [FromBody] CardUpdateRequest request,
+        CancellationToken cancellationToken)
+    {
+        // Check If-Match header (ETag required for optimistic concurrency)
+        var ifMatchValues = Request?.Headers.IfMatch;
+        var ifMatch = ifMatchValues?.ToString();
+        if (string.IsNullOrEmpty(ifMatch))
+        {
+            return StatusCode(428, new { Message = "ETag required for update" });
+        }
+
+        // Validate card number format
+        // COBOL: COCRDUPC.cbl:721-800 — card number validation
+        var cardValidation = CardValidationService.ValidateCardNumber(cardNumber, required: true);
+        if (!cardValidation.IsValid)
+        {
+            return BadRequest(new { Message = cardValidation.ErrorMessage });
+        }
+
+        // Decode ETag from Base64 to rowversion bytes
+        byte[] rowVersion;
+        try
+        {
+            rowVersion = Convert.FromBase64String(ifMatch);
+        }
+        catch (FormatException)
+        {
+            return BadRequest(new { Message = "Invalid ETag format" });
+        }
+
+        var result = await _updateService.UpdateCardAsync(
+            cardNumber, request, rowVersion, cancellationToken);
+
+        // COBOL: CHANGES-OKAYED-AND-DONE
+        if (result.IsSuccess)
+        {
+            return Ok(MapToUpdateResponse(result.Card!));
+        }
+
+        // COBOL: SHOW-DETAILS with "No change detected" message
+        if (result.IsNoChange)
+        {
+            var card = MapToUpdateResponse(result.Card!);
+            return Ok(new { result.Message, Card = card });
+        }
+
+        // COBOL: CHANGES-NOT-OK — validation errors
+        if (result.IsValidationFailure)
+        {
+            return BadRequest(new { Errors = result.ValidationErrors });
+        }
+
+        // Card not found
+        if (result.IsNotFound)
+        {
+            return NotFound(new { Message = "Did not find cards for this search condition" });
+        }
+
+        // COBOL: DATA-WAS-CHANGED-BEFORE-UPDATE — concurrency conflict
+        if (result.IsConflict)
+        {
+            var card = MapToUpdateResponse(result.Card!);
+            return Conflict(new { result.Message, Card = card });
+        }
+
+        // COBOL: LOCKED-BUT-UPDATE-FAILED — write failure
+        return StatusCode(500, new { result.Message });
+    }
+
+    private static CardUpdateResponse MapToUpdateResponse(Card card) => new()
+    {
+        CardNumber = card.CardNumber,
+        AccountId = card.AccountId,
+        EmbossedName = card.EmbossedName,
+        ExpirationDate = card.ExpirationDate.ToString(
+            "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture),
+        ActiveStatus = card.ActiveStatus,
+        ETag = Convert.ToBase64String(card.RowVersion)
+    };
 }
