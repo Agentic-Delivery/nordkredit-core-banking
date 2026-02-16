@@ -19,6 +19,7 @@ public class NordKreditDbContext : DbContext
     public DbSet<TransactionCategoryBalance> TransactionCategoryBalances => Set<TransactionCategoryBalance>();
     public DbSet<CardCrossReference> CardCrossReferences => Set<CardCrossReference>();
     public DbSet<Account> Accounts => Set<Account>();
+    public DbSet<DailyReject> DailyRejects => Set<DailyReject>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -29,6 +30,7 @@ public class NordKreditDbContext : DbContext
         ConfigureTransactionCategoryBalance(modelBuilder);
         ConfigureCardCrossReference(modelBuilder);
         ConfigureAccount(modelBuilder);
+        ConfigureDailyReject(modelBuilder);
     }
 
     private static void ConfigureTransaction(ModelBuilder modelBuilder)
@@ -127,6 +129,24 @@ public class NordKreditDbContext : DbContext
             entity.Property(e => e.CashCreditLimit).HasColumnType("decimal(12,2)").IsRequired();
             entity.Property(e => e.CurrentCycleCredit).HasColumnType("decimal(12,2)").IsRequired();
             entity.Property(e => e.CurrentCycleDebit).HasColumnType("decimal(12,2)").IsRequired();
+            entity.Property(e => e.ExpirationDate).IsRequired(false);
+        });
+    }
+
+    private static void ConfigureDailyReject(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<DailyReject>(entity =>
+        {
+            entity.ToTable("DailyRejects");
+            entity.HasKey(e => new { e.TransactionId, e.RejectCode });
+
+            entity.Property(e => e.TransactionId).HasMaxLength(16).IsRequired();
+            entity.Property(e => e.CardNumber).HasMaxLength(16).IsRequired();
+            entity.Property(e => e.AccountId).HasMaxLength(11).IsRequired();
+            entity.Property(e => e.RejectCode).IsRequired();
+            entity.Property(e => e.RejectReason).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.TransactionAmount).HasColumnType("decimal(11,2)").IsRequired();
+            entity.Property(e => e.RejectedAt).IsRequired();
         });
     }
 }

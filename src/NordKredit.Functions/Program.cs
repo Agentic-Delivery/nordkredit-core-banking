@@ -15,6 +15,9 @@ builder.Services.AddScoped<ICardCrossReferenceRepository, SqlCardCrossReferenceR
 builder.Services.AddScoped<IAccountRepository, SqlAccountRepository>();
 builder.Services.AddScoped<CardVerificationService>();
 builder.Services.AddScoped<CardVerificationFunction>();
+builder.Services.AddScoped<IDailyRejectRepository, SqlDailyRejectRepository>();
+builder.Services.AddScoped<TransactionCreditValidationService>();
+builder.Services.AddScoped<TransactionCreditValidationFunction>();
 
 builder.Services.AddHostedService<Worker>();
 
