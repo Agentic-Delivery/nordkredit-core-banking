@@ -113,7 +113,7 @@ PERFORM LATE-PAYMENT-DETECTION (daily batch — runs after payment posting):
 | Payment Status | Days Past Due | Action | Fee | Rate Impact |
 |---------------|---------------|--------|-----|-------------|
 | Minimum payment received | N/A | Account current — no action | None | Standard rate |
-| Partial payment (< minimum) | 0 | Grace — check again tomorrow | None | Standard rate |
+| Partial payment (`< minimum`) | 0 | Grace — check again tomorrow | None | Standard rate |
 | No payment | 1 | Assess late fee, send reminder | Late fee | Standard rate |
 | No payment | 30+ | First delinquency notice | None (already assessed) | May trigger penalty rate |
 | No payment | 60+ | Restrict new transactions | None | Penalty rate |
@@ -125,7 +125,7 @@ PERFORM LATE-PAYMENT-DETECTION (daily batch — runs after payment posting):
 |-----------|-----------------|
 | First late payment | Lesser of fee-schedule amount or minimum payment due |
 | Subsequent late payment (same cycle) | No additional late fee within same cycle |
-| Balance under threshold (e.g., < 100 SEK) | No late fee if balance is minimal |
+| Balance under threshold (e.g., `< 100 SEK`) | No late fee if balance is minimal |
 | Regulatory cap | Per Swedish consumer credit regulations |
 
 ## Source COBOL Reference

@@ -99,11 +99,11 @@ AML/KYC NIGHTLY SCREENING BATCH:
 |---|---|---|---|---|
 | >= 150,000 | Any | No | No | Threshold report (mandatory) |
 | >= 150,000 | Any | Yes | Any | Sanctions alert + threshold report |
-| < 150,000 | High | No | No | Enhanced monitoring report |
-| < 150,000 | Any | Yes | Any | Sanctions alert (immediate) |
+| `< 150,000` | High | No | No | Enhanced monitoring report |
+| `< 150,000` | Any | Yes | Any | Sanctions alert (immediate) |
 | Any | Any | No | Yes | SAR candidate for review |
 | Cumulative daily >= 150,000 | Any | No | No | Structuring review flag |
-| < 50,000 | Low/Medium | No | No | No action (standard processing) |
+| `< 50,000` | Low/Medium | No | No | No action (standard processing) |
 
 ### AML Threshold Values
 

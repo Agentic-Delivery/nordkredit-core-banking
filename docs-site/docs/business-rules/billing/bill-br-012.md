@@ -90,8 +90,8 @@ MINIMUM PAYMENT FORMULA (typical Swedish credit card):
 
 | Balance | Past Due | Overlimit | Calculation | Outcome |
 |---------|----------|-----------|-------------|---------|
-| <= 0 | N/A | N/A | No payment due | MinPayment = 0.00 |
-| > 0, <= threshold | No | No | Full balance | MinPayment = Balance |
+| `<= 0` | N/A | N/A | No payment due | MinPayment = 0.00 |
+| `> 0, <= threshold` | No | No | Full balance | MinPayment = Balance |
 | > threshold | No | No | MAX(Fixed, Pct × Balance) | Standard minimum |
 | > threshold | Yes | No | Standard + PastDue | Includes past due |
 | > threshold | No | Yes | Standard + Overlimit | Includes overlimit |

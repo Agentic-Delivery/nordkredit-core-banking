@@ -431,8 +431,8 @@ A domain cutover is considered successful when **all** of the following are met:
 
 | Criterion | Measurement | Target |
 |-----------|------------|--------|
-| Error rate | Application Insights error rate | < 0.1% for 48 hours |
-| Latency | Application Insights p99 | < 500ms for 48 hours |
+| Error rate | Application Insights error rate | `< 0.1%` for 48 hours |
+| Latency | Application Insights p99 | `< 500ms` for 48 hours |
 | Batch SLA | Batch completion time | Within SLA window for 2 consecutive cycles |
 | Data integrity | Reconciliation checks | Zero discrepancies |
 | Payment processing | Bankgirot/SWIFT message delivery | Zero lost or duplicated messages |
@@ -471,7 +471,7 @@ Configure an Application Insights dashboard with:
 
 | Panel | Metric | Alert Threshold |
 |-------|--------|----------------|
-| API Health | Request success rate | < 99.9% |
+| API Health | Request success rate | `< 99.9%` |
 | API Latency | p50, p95, p99 response time | p99 > 500ms |
 | Error Breakdown | 4xx and 5xx by endpoint | 5xx > 0.1% |
 | Batch Status | Last batch completion time | Past SLA deadline |
