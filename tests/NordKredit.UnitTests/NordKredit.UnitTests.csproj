@@ -22,6 +22,7 @@
     <ProjectReference Include="..\..\src\NordKredit.Api\NordKredit.Api.csproj" />
     <ProjectReference Include="..\..\src\NordKredit.Domain\NordKredit.Domain.csproj" />
     <ProjectReference Include="..\..\src\NordKredit.Functions\NordKredit.Functions.csproj" />
+    <ProjectReference Include="..\..\src\NordKredit.Infrastructure\NordKredit.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
