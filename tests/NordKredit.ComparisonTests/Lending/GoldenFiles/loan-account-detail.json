@@ -1,0 +1,24 @@
+{
+  "_comment": "Golden file: Expected mainframe output for loan account detail inquiry (single account retrieval).",
+  "_cobolSource": "CVACT01Y.cpy — ACCOUNT-RECORD (300 bytes), primary key lookup on ACCT-ID",
+  "_businessRule": "LND-BR-001, LND-BR-002",
+  "_regulation": "FSA FFFS 2014:5 Ch.6 (credit risk), Consumer Credit Directive Art.10, GDPR Art.15",
+  "_knownDifferences": {
+    "concurrency": "COBOL uses field-by-field comparison. Migrated system uses SQL rowversion (ETag).",
+    "statusValues": "COBOL: 'Y'/'N'. Migrated system: Active/Delinquent/Defaulted/Frozen/PaidOff/Closed.",
+    "creditLimitDisplay": "COBOL displays limit as single COMP-3 field. Migrated system includes availableCredit as derived field."
+  },
+  "accountId": "20000000001",
+  "status": "Active",
+  "loanType": "TermLoan",
+  "currentBalance": 500000.00,
+  "creditLimit": 500000.00,
+  "cashCreditLimit": 50000.00,
+  "availableCredit": 465000.00,
+  "currentCycleCredit": 35000.00,
+  "currentCycleDebit": 0.00,
+  "expirationDate": "2028-01-15",
+  "disclosureGroupId": "LNTERM001",
+  "borrowerName": "Erik Johansson",
+  "originationDate": "2023-01-15"
+}

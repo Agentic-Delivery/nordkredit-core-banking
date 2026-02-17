@@ -1,0 +1,60 @@
+{
+  "_comment": "Golden file: Expected mainframe output for loan payment calculations (daily interest and early repayment).",
+  "_cobolSource": "Dedicated interest calculation batch program — daily interest with Actual/360 convention",
+  "_businessRule": "LND-BR-004 (interest calculation), LND-BR-005 (repayment processing)",
+  "_regulation": "FSA FFFS 2014:5 Ch.6, Consumer Credit Directive Art.10/16 (early repayment right), Swedish Consumer Credit Act §36",
+  "_knownDifferences": {
+    "decimalPrecision": "COBOL COMP-3 uses PIC S9(10)V99. Migrated system uses .NET decimal with MidpointRounding.ToEven.",
+    "dayCountConvention": "Both systems use Actual/360 for SEK lending as per FSA convention."
+  },
+  "interestScenarios": [
+    {
+      "name": "StandardTermLoan_30Days",
+      "balance": 500000.00,
+      "annualRate": 0.055,
+      "dayCountConvention": "Actual360",
+      "daysInPeriod": 30,
+      "expectedInterest": 2291.67
+    },
+    {
+      "name": "PersonalLoan_30Days",
+      "balance": 100000.00,
+      "annualRate": 0.085,
+      "dayCountConvention": "Actual360",
+      "daysInPeriod": 30,
+      "expectedInterest": 708.33
+    },
+    {
+      "name": "Mortgage_30Days",
+      "balance": 1250000.00,
+      "annualRate": 0.039,
+      "dayCountConvention": "Actual360",
+      "daysInPeriod": 30,
+      "expectedInterest": 4062.50
+    },
+    {
+      "name": "ZeroBalance_NoInterest",
+      "balance": 0.00,
+      "annualRate": 0.055,
+      "dayCountConvention": "Actual360",
+      "daysInPeriod": 30,
+      "expectedInterest": 0.00
+    },
+    {
+      "name": "NegativeBalance_NoInterest",
+      "balance": -5000.00,
+      "annualRate": 0.055,
+      "dayCountConvention": "Actual360",
+      "daysInPeriod": 30,
+      "expectedInterest": 0.00
+    }
+  ],
+  "earlyRepaymentScenario": {
+    "accountId": "20000000005",
+    "outstandingPrincipal": 350000.00,
+    "annualRate": 0.055,
+    "daysAccrued": 30,
+    "accruedInterest": 1604.17,
+    "totalRepaymentAmount": 351604.17
+  }
+}

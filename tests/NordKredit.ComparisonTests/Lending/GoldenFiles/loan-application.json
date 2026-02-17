@@ -1,0 +1,82 @@
+{
+  "_comment": "Golden file: Expected mainframe output for loan application processing (origination and credit assessment).",
+  "_cobolSource": "Dedicated origination program (inferred from CVACT01Y.cpy)",
+  "_businessRule": "LND-BR-003",
+  "_regulation": "FSA FFFS 2014:5 Ch.6, Consumer Credit Directive Art.8 (creditworthiness), AML 2017:11 (customer due diligence)",
+  "_knownDifferences": {
+    "applicationId": "COBOL uses sequential numeric IDs. Migrated system uses APP-yyyyMMddHHmmssfff format.",
+    "statusValues": "COBOL uses numeric status codes. Migrated system uses Pending/Approved/Rejected/Cancelled."
+  },
+  "applications": [
+    {
+      "applicationId": "APP-20250115100000001",
+      "customerId": "CUST-000001",
+      "applicantName": "Erik Johansson",
+      "requestedAmount": 500000.00,
+      "requestedTermMonths": 60,
+      "loanType": "TermLoan",
+      "status": "Approved",
+      "applicationDate": "2025-01-15",
+      "amlKycPassed": true,
+      "creditAssessmentPassed": true,
+      "approvedCreditLimit": 500000.00,
+      "rejectionReason": null
+    },
+    {
+      "applicationId": "APP-20250120143000001",
+      "customerId": "CUST-000002",
+      "applicantName": "Anna Lindström",
+      "requestedAmount": 2500000.00,
+      "requestedTermMonths": 300,
+      "loanType": "Mortgage",
+      "status": "Approved",
+      "applicationDate": "2025-01-20",
+      "amlKycPassed": true,
+      "creditAssessmentPassed": true,
+      "approvedCreditLimit": 2000000.00,
+      "rejectionReason": null
+    },
+    {
+      "applicationId": "APP-20250201090000001",
+      "customerId": "CUST-000003",
+      "applicantName": "Björk Ekström",
+      "requestedAmount": 150000.00,
+      "requestedTermMonths": 36,
+      "loanType": "TermLoan",
+      "status": "Rejected",
+      "applicationDate": "2025-02-01",
+      "amlKycPassed": true,
+      "creditAssessmentPassed": false,
+      "approvedCreditLimit": null,
+      "rejectionReason": "Insufficient creditworthiness — debt-to-income ratio exceeds 50%"
+    },
+    {
+      "applicationId": "APP-20250205110000001",
+      "customerId": "CUST-000004",
+      "applicantName": "Lars Öberg",
+      "requestedAmount": 75000.00,
+      "requestedTermMonths": 12,
+      "loanType": "RevolvingCredit",
+      "status": "Rejected",
+      "applicationDate": "2025-02-05",
+      "amlKycPassed": false,
+      "creditAssessmentPassed": false,
+      "approvedCreditLimit": null,
+      "rejectionReason": "AML/KYC verification failed — enhanced due diligence required"
+    },
+    {
+      "applicationId": "APP-20250210150000001",
+      "customerId": "CUST-000005",
+      "applicantName": "Maja Ålund",
+      "requestedAmount": 400000.00,
+      "requestedTermMonths": 48,
+      "loanType": "TermLoan",
+      "status": "Pending",
+      "applicationDate": "2025-02-10",
+      "amlKycPassed": false,
+      "creditAssessmentPassed": false,
+      "approvedCreditLimit": null,
+      "rejectionReason": null
+    }
+  ]
+}

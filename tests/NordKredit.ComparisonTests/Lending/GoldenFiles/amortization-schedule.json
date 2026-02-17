@@ -1,0 +1,117 @@
+{
+  "_comment": "Golden file: Expected mainframe output for amortization schedule generation (payment plan with interest/principal split).",
+  "_cobolSource": "Dedicated amortization program (inferred from CVACT01Y.cpy ACCT-GROUP-ID)",
+  "_businessRule": "LND-BR-004",
+  "_regulation": "FSA FFFS 2014:5 Ch.6, Consumer Credit Directive Art.10 (credit agreement information), Art.19 (APR calculation)",
+  "_knownDifferences": {
+    "decimalPrecision": "COBOL COMP-3 uses PIC S9(10)V99. Migrated system uses .NET decimal with MidpointRounding.ToEven (banker's rounding).",
+    "finalPaymentAdjustment": "Both systems adjust final payment to zero out remaining principal. Rounding residual may differ by ±0.01."
+  },
+  "scenarios": [
+    {
+      "name": "StandardTermLoan_5Year",
+      "principal": 500000.00,
+      "annualRate": 0.055,
+      "termMonths": 60,
+      "expectedMonthlyPayment": 9550.58,
+      "firstPeriod": {
+        "periodNumber": 1,
+        "paymentAmount": 9550.58,
+        "principalPortion": 7258.91,
+        "interestPortion": 2291.67,
+        "remainingPrincipal": 492741.09
+      },
+      "secondPeriod": {
+        "periodNumber": 2,
+        "paymentAmount": 9550.58,
+        "principalPortion": 7292.18,
+        "interestPortion": 2258.40,
+        "remainingPrincipal": 485448.91
+      },
+      "thirdPeriod": {
+        "periodNumber": 3,
+        "paymentAmount": 9550.58,
+        "principalPortion": 7325.61,
+        "interestPortion": 2224.97,
+        "remainingPrincipal": 478123.30
+      },
+      "lastPeriod": {
+        "periodNumber": 60,
+        "paymentAmount": 9550.64,
+        "principalPortion": 9507.07,
+        "interestPortion": 43.57,
+        "remainingPrincipal": 0.00
+      }
+    },
+    {
+      "name": "ShortTermPersonalLoan_1Year",
+      "principal": 100000.00,
+      "annualRate": 0.085,
+      "termMonths": 12,
+      "expectedMonthlyPayment": 8721.98,
+      "firstPeriod": {
+        "periodNumber": 1,
+        "paymentAmount": 8721.98,
+        "principalPortion": 8013.65,
+        "interestPortion": 708.33,
+        "remainingPrincipal": 91986.35
+      },
+      "secondPeriod": {
+        "periodNumber": 2,
+        "paymentAmount": 8721.98,
+        "principalPortion": 8070.41,
+        "interestPortion": 651.57,
+        "remainingPrincipal": 83915.94
+      },
+      "thirdPeriod": {
+        "periodNumber": 3,
+        "paymentAmount": 8721.98,
+        "principalPortion": 8127.58,
+        "interestPortion": 594.40,
+        "remainingPrincipal": 75788.36
+      },
+      "lastPeriod": {
+        "periodNumber": 12,
+        "paymentAmount": 8721.96,
+        "principalPortion": 8660.61,
+        "interestPortion": 61.35,
+        "remainingPrincipal": 0.00
+      }
+    },
+    {
+      "name": "ZeroRate_InterestFreeLoan",
+      "principal": 240000.00,
+      "annualRate": 0.0,
+      "termMonths": 24,
+      "expectedMonthlyPayment": 10000.00,
+      "firstPeriod": {
+        "periodNumber": 1,
+        "paymentAmount": 10000.00,
+        "principalPortion": 10000.00,
+        "interestPortion": 0.00,
+        "remainingPrincipal": 230000.00
+      },
+      "secondPeriod": {
+        "periodNumber": 2,
+        "paymentAmount": 10000.00,
+        "principalPortion": 10000.00,
+        "interestPortion": 0.00,
+        "remainingPrincipal": 220000.00
+      },
+      "thirdPeriod": {
+        "periodNumber": 3,
+        "paymentAmount": 10000.00,
+        "principalPortion": 10000.00,
+        "interestPortion": 0.00,
+        "remainingPrincipal": 210000.00
+      },
+      "lastPeriod": {
+        "periodNumber": 24,
+        "paymentAmount": 10000.00,
+        "principalPortion": 10000.00,
+        "interestPortion": 0.00,
+        "remainingPrincipal": 0.00
+      }
+    }
+  ]
+}
