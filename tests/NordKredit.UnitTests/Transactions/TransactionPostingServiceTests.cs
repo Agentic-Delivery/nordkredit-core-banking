@@ -557,7 +557,7 @@ internal sealed class StubTransactionCategoryBalanceRepositoryForPosting : ITran
     public Task<IReadOnlyList<TransactionCategoryBalance>> GetByAccountIdAsync(
         string accountId, CancellationToken cancellationToken = default)
         => Task.FromResult<IReadOnlyList<TransactionCategoryBalance>>(
-            _balances.Values.Where(b => b.AccountId == accountId).ToList());
+            [.. _balances.Values.Where(b => b.AccountId == accountId)]);
 
     public Task UpsertAsync(TransactionCategoryBalance balance, CancellationToken cancellationToken = default)
     {
