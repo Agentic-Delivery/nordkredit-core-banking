@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using NordKredit.Domain.Transactions;
 using NordKredit.Functions;
 using NordKredit.Functions.Batch;
+using NordKredit.Functions.Batch.Deposits;
 using NordKredit.Functions.Telemetry;
 using NordKredit.Infrastructure;
 using NordKredit.Infrastructure.Transactions;
@@ -39,6 +40,15 @@ builder.Services.AddScoped<TransactionDetailReportService>();
 builder.Services.AddScoped<TransactionReportFunction>();
 builder.Services.AddScoped<IReportGenerationStep>(sp => sp.GetRequiredService<TransactionReportFunction>());
 builder.Services.AddScoped<DailyBatchOrchestrator>();
+
+// Deposits batch pipeline — replaces JCL deposit interest/statement batch.
+// Regulations: FSA FFFS 2014:5 Ch. 3 & 6, Deposit Guarantee Directive.
+builder.Services.AddScoped<InterestAccrualFunction>();
+builder.Services.AddScoped<IInterestAccrualStep>(sp => sp.GetRequiredService<InterestAccrualFunction>());
+builder.Services.AddScoped<StatementGenerationFunction>();
+builder.Services.AddScoped<IStatementGenerationStep>(sp => sp.GetRequiredService<StatementGenerationFunction>());
+builder.Services.AddScoped<DepositsBatchOrchestrator>();
+
 builder.Services.AddSingleton(TimeProvider.System);
 
 builder.Services.AddHostedService<Worker>();
