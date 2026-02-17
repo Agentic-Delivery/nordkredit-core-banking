@@ -2,7 +2,7 @@
 id: "sec-br-003"
 title: "User session context management via COMMAREA"
 domain: "user-security"
-cobol_source: "COCRDLIC.cbl:226-262,COCRDLIC.cbl:315-332,COCRDLIC.cbl:604-619,COCRDSLC.cbl:198-205,COCRDSLC.cbl:256-278,COCRDSLC.cbl:393-405,COCRDUPC.cbl:345"
+cobol_source: "COCRDLIC.cbl:226-262,COCRDLIC.cbl:315-332,COCRDLIC.cbl:604-619,COCRDSLC.cbl:198-205,COCRDSLC.cbl:256-278,COCRDSLC.cbl:393-405,COCRDUPC.cbl:345,COCOM01Y.cpy:19-46,CSUSR01Y.cpy:17-23"
 requirement_id: "SEC-BR-003"
 regulations:
   - "PSD2 Art. 97"
@@ -70,20 +70,71 @@ PROGRAM TRANSFER (XCTL with context):
     END-EXEC
 ```
 
-### COMMAREA Structure
+### COMMAREA Structure (verified from COCOM01Y.cpy)
 
-| Field | Source | Purpose | Security Relevance |
-|-------|--------|---------|-------------------|
-| CDEMO-FROM-TRANID | COCOM01Y.cpy | Calling transaction ID | Tracks origin for audit/navigation |
-| CDEMO-FROM-PROGRAM | COCOM01Y.cpy | Calling program name | Controls PF3 return destination |
-| CDEMO-USRTYP-USER | COCOM01Y.cpy | User type flag (USER/ADMIN) | Determines data access level |
-| CDEMO-PGM-ENTER | COCOM01Y.cpy | First-entry/re-entry flag | Controls initialization vs restore |
-| CDEMO-ACCT-ID | COCOM01Y.cpy | Current account context | Drives account-level filtering |
-| CDEMO-CARD-NUM | COCOM01Y.cpy | Current card context | Drives card-level filtering |
-| CDEMO-LAST-MAPSET | COCOM01Y.cpy | Last displayed mapset | UI state preservation |
-| CDEMO-LAST-MAP | COCOM01Y.cpy | Last displayed map | UI state preservation |
-| CDEMO-TO-PROGRAM | COCOM01Y.cpy | Target program (menu return) | Navigation routing |
-| Program-specific area | Per-program | Pagination keys, local state | Program working context |
+```cobol
+ 01 CARDDEMO-COMMAREA.
+    05 CDEMO-GENERAL-INFO.
+       10 CDEMO-FROM-TRANID             PIC X(04).
+       10 CDEMO-FROM-PROGRAM            PIC X(08).
+       10 CDEMO-TO-TRANID               PIC X(04).
+       10 CDEMO-TO-PROGRAM              PIC X(08).
+       10 CDEMO-USER-ID                 PIC X(08).
+       10 CDEMO-USER-TYPE               PIC X(01).
+          88 CDEMO-USRTYP-ADMIN         VALUE 'A'.
+          88 CDEMO-USRTYP-USER          VALUE 'U'.
+       10 CDEMO-PGM-CONTEXT             PIC 9(01).
+          88 CDEMO-PGM-ENTER            VALUE 0.
+          88 CDEMO-PGM-REENTER          VALUE 1.
+    05 CDEMO-CUSTOMER-INFO.
+       10 CDEMO-CUST-ID                 PIC 9(09).
+       10 CDEMO-CUST-FNAME              PIC X(25).
+       10 CDEMO-CUST-MNAME              PIC X(25).
+       10 CDEMO-CUST-LNAME              PIC X(25).
+    05 CDEMO-ACCOUNT-INFO.
+       10 CDEMO-ACCT-ID                 PIC 9(11).
+       10 CDEMO-ACCT-STATUS             PIC X(01).
+    05 CDEMO-CARD-INFO.
+       10 CDEMO-CARD-NUM                PIC 9(16).
+    05 CDEMO-MORE-INFO.
+       10 CDEMO-LAST-MAP                PIC X(7).
+       10 CDEMO-LAST-MAPSET             PIC X(7).
+```
+
+| Field | Type | Purpose | Security Relevance |
+|-------|------|---------|-------------------|
+| CDEMO-FROM-TRANID | PIC X(04) | Calling transaction ID | Tracks origin for audit/navigation |
+| CDEMO-FROM-PROGRAM | PIC X(08) | Calling program name | Controls PF3 return destination |
+| CDEMO-TO-TRANID | PIC X(04) | Target transaction ID | Navigation routing |
+| CDEMO-TO-PROGRAM | PIC X(08) | Target program name | Navigation routing |
+| CDEMO-USER-ID | PIC X(08) | Authenticated user identity | Carries user identity across all invocations |
+| CDEMO-USER-TYPE | PIC X(01) | User type flag ('A'=admin, 'U'=user) | Determines data access level |
+| CDEMO-PGM-CONTEXT | PIC 9(01) | First-entry (0) / re-entry (1) flag | Controls initialization vs restore |
+| CDEMO-CUST-ID | PIC 9(09) | Customer identifier | Ties session to customer context |
+| CDEMO-ACCT-ID | PIC 9(11) | Current account context | Drives account-level filtering |
+| CDEMO-ACCT-STATUS | PIC X(01) | Account status | Status-gated operations |
+| CDEMO-CARD-NUM | PIC 9(16) | Current card context | Drives card-level filtering |
+| CDEMO-LAST-MAPSET | PIC X(7) | Last displayed mapset | UI state preservation |
+| CDEMO-LAST-MAP | PIC X(7) | Last displayed map | UI state preservation |
+| Program-specific area | Varies | Pagination keys, local state | Program working context |
+
+**Signed-on user data (CSUSR01Y.cpy):**
+
+```cobol
+ 01 SEC-USER-DATA.
+    05 SEC-USR-ID                 PIC X(08).
+    05 SEC-USR-FNAME              PIC X(20).
+    05 SEC-USR-LNAME              PIC X(20).
+    05 SEC-USR-PWD                PIC X(08).
+    05 SEC-USR-TYPE               PIC X(01).
+    05 SEC-USR-FILLER             PIC X(23).
+```
+
+**Key observations from copybooks:**
+- `CDEMO-USER-ID` (8 chars) and `SEC-USR-ID` (8 chars) are the same domain — the sign-on program copies the authenticated user's ID into the COMMAREA.
+- `CDEMO-USER-TYPE` and `SEC-USR-TYPE` are both single-character fields with the same 'A'/'U' domain — user type is propagated from the user record to the session context.
+- `CDEMO-CUSTOMER-INFO` contains customer name fields (FNAME, MNAME, LNAME) carried in the session, representing PII that must be protected under GDPR.
+- The COMMAREA is a fixed-size flat structure (no variable-length fields), totaling approximately 160 bytes for the shared section.
 
 ### Session Lifecycle
 
@@ -282,7 +333,7 @@ THEN the card detail program initializes its own WS-THIS-PROGCOMMAREA
 
 1. **COMMAREA size fixed across programs**: All programs use the same COCOM01Y copybook for the shared section, but each appends a different program-specific section. The total COMMAREA size varies by program. CICS manages the length via `LENGTH OF WS-COMMAREA`. The migrated system should use a typed session object with a shared base class and program-specific extensions.
 
-2. **No COMMAREA encryption**: The COMMAREA is stored in CICS temporary storage in clear text. There is no encryption of session data in the COBOL source. The migrated system must encrypt sensitive session data (user type, account context) in transit and at rest, especially for PSD2 compliance.
+2. **No COMMAREA encryption — PII exposure**: The COMMAREA carries customer PII (`CDEMO-CUST-FNAME`, `CDEMO-CUST-MNAME`, `CDEMO-CUST-LNAME`, `CDEMO-CUST-ID`) and the user password is stored as plain text in `SEC-USR-PWD` (8 chars max). The COMMAREA is stored in CICS temporary storage in clear text. The migrated system must encrypt sensitive session data (user type, account context, customer PII) in transit and at rest, especially for GDPR and PSD2 compliance.
 
 3. **Direct invocation protection only in COCRDSLC**: The card detail program (COCRDSLC) explicitly checks for EIBCALEN = 0 and sends an error (line 260-265). However, COCRDLIC defaults to initialization when EIBCALEN = 0 (line 315), which means it can be invoked directly from CICS (e.g., via CEMT). The migrated system should require authentication context for all endpoints.
 
@@ -292,9 +343,9 @@ THEN the card detail program initializes its own WS-THIS-PROGCOMMAREA
 
 ## Domain Expert Notes
 
-- **null** — Awaiting domain expert review. Key questions: (1) What is the maximum COMMAREA size in production — does it exceed the CICS 32K limit for any program chain? (2) Is the session tied to the CICS terminal ID (EIBTRMID), and does the mainframe enforce single-session-per-terminal? (3) Does the CICS region have transaction timeout configured, and what is the value? (4) Are there any CICS security exits that validate the COMMAREA contents between program transfers?
+- **Copybook analysis complete** — COCOM01Y.cpy confirms the COMMAREA shared section is approximately 160 bytes (well within CICS 32K limit). The structure includes customer PII fields (names, IDs) that constitute GDPR-relevant personal data carried in the session. `CDEMO-USER-ID` (8 chars) and `CDEMO-USER-TYPE` ('A'/'U') are the security-critical fields. **Remaining questions for domain expert:** (1) Is the session tied to the CICS terminal ID (EIBTRMID), and does the mainframe enforce single-session-per-terminal? (2) Does the CICS region have transaction timeout configured, and what is the value? (3) Are there any CICS security exits that validate the COMMAREA contents between program transfers?
 
 ---
 
 **Template version:** 1.0
-**Last updated:** 2026-02-16
+**Last updated:** 2026-02-17

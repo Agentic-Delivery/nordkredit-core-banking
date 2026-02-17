@@ -2,7 +2,7 @@
 id: "sec-br-005"
 title: "CICS terminal authentication and PSD2 SCA mapping"
 domain: "user-security"
-cobol_source: "COCRDLIC.cbl:284-285,COCRDSLC.cbl:226-227,COCRDUPC.cbl:345-346,COCRDLIC.cbl:315-321"
+cobol_source: "COCRDLIC.cbl:284-285,COCRDSLC.cbl:226-227,COCRDUPC.cbl:345-346,COCRDLIC.cbl:315-321,CSUSR01Y.cpy:17-23,COCOM01Y.cpy:25-28"
 requirement_id: "SEC-BR-005"
 regulations:
   - "PSD2 Art. 97"
@@ -59,7 +59,7 @@ APPLICATION BEHAVIOR (what the COBOL programs do):
 | RACF/ACF2/TopSecret | Credential validation and security profiles | Azure AD identity store + conditional access policies |
 | EIBUSERID | Authenticated user identity | JWT claims (sub, email) |
 | Transaction-level security | Authorization by transaction code | API endpoint authorization via Azure AD roles/scopes |
-| CSUSR01Y copybook | Signed-on user data structure | Claims principal / user context object |
+| CSUSR01Y.cpy (SEC-USER-DATA) | User record: ID, name, password, type | Claims principal / user context object |
 | CICS terminal session | Session management | OAuth 2.0 access tokens + refresh tokens |
 | CDEMO-USRTYP-USER | Application-level role flag | Azure AD app roles (Admin, User) |
 
@@ -102,9 +102,42 @@ APPLICATION BEHAVIOR (what the COBOL programs do):
 000321         SET CDEMO-PGM-ENTER        TO TRUE
 ```
 
-### Key Observation
+### CSUSR01Y.cpy — Signed-On User Data Structure (verified)
 
-The `CSUSR01Y.cpy` copybook is not in the workspace but is referenced by all three programs. It defines the data structure that CICS populates with the signed-on user's identity after successful authentication. The actual authentication logic resides in the CICS infrastructure layer (CESN transaction + ESM), not in the application.
+```cobol
+ 01 SEC-USER-DATA.
+    05 SEC-USR-ID                 PIC X(08).
+    05 SEC-USR-FNAME              PIC X(20).
+    05 SEC-USR-LNAME              PIC X(20).
+    05 SEC-USR-PWD                PIC X(08).
+    05 SEC-USR-TYPE               PIC X(01).
+    05 SEC-USR-FILLER             PIC X(23).
+```
+
+**Key findings from the copybook:**
+- `SEC-USR-ID` (8 chars): User identifier matching `CDEMO-USER-ID` in the COMMAREA.
+- `SEC-USR-FNAME` / `SEC-USR-LNAME`: User's first and last name — PII under GDPR.
+- `SEC-USR-PWD` (8 chars): Password stored in the user record. The 8-character limit indicates legacy password policy constraints. This field is likely used by the sign-on program (COSGN00C) to validate credentials.
+- `SEC-USR-TYPE` (1 char): User type flag ('A' = admin, 'U' = regular user), matching `CDEMO-USER-TYPE` in the COMMAREA.
+- `SEC-USR-FILLER` (23 chars): Reserved space, typical of COBOL record padding for future expansion.
+
+**COCOM01Y.cpy — User Identity in COMMAREA (verified):**
+
+```cobol
+       10 CDEMO-USER-ID                 PIC X(08).
+       10 CDEMO-USER-TYPE               PIC X(01).
+          88 CDEMO-USRTYP-ADMIN         VALUE 'A'.
+          88 CDEMO-USRTYP-USER          VALUE 'U'.
+```
+
+**Authentication flow (inferred from both copybooks):**
+1. COSGN00C reads `SEC-USER-DATA` from the user data file
+2. Validates `SEC-USR-PWD` against the password entered at the CICS terminal
+3. On success, copies `SEC-USR-ID` to `CDEMO-USER-ID` and `SEC-USR-TYPE` to `CDEMO-USER-TYPE` in the COMMAREA
+4. Transfers control to the menu program with the populated COMMAREA
+5. All subsequent programs inherit the user identity and type from the COMMAREA
+
+**Security concern:** `SEC-USR-PWD` appears to be stored in plain text (no hashing). The migrated system must use Azure AD B2C's secure credential store (bcrypt/PBKDF2 hashed passwords) instead.
 
 ## Acceptance Criteria
 
@@ -175,21 +208,21 @@ THEN the session is invalidated
 
 ## Edge Cases
 
-1. **No password complexity in application code**: Password policies (length, complexity, expiration, lockout) are entirely managed by the ESM (RACF/ACF2). The COBOL programs have no visibility into credential management. The migrated system must configure Azure AD B2C password policies to match or exceed the current RACF policies.
+1. **8-character password limit**: The `SEC-USR-PWD` field in CSUSR01Y is `PIC X(08)` — passwords are limited to 8 characters with no visible complexity enforcement in the data structure. Password policies (complexity, expiration, lockout) are managed by the ESM (RACF/ACF2) at the infrastructure level, not in the application code. The migrated system must configure Azure AD B2C password policies to significantly exceed this (minimum 12+ characters, complexity rules, MFA).
 
 2. **Single-factor authentication gap**: The current system uses password-only authentication (CICS CESN). PSD2 Art. 97 requires two-factor authentication for accessing payment account data online. The migration MUST add a second authentication factor (possession or inherence) to achieve SCA compliance.
 
 3. **Terminal-based session binding**: CICS sessions are bound to a physical terminal (EIBTRMID). A user cannot access the same session from a different terminal. The migrated system should implement device binding or token binding to replicate this security property.
 
-4. **CSUSR01Y copybook missing**: The signed-on user data structure is not available in the workspace. This is critical for understanding what user attributes are available to the application after authentication. The production CSUSR01Y copybook must be obtained from the mainframe team to complete the identity mapping.
+4. **Plain-text password storage**: `SEC-USR-PWD` in CSUSR01Y stores the password as plain text (`PIC X(08)`). There is no indication of hashing or encryption. If the sign-on program (COSGN00C) compares the entered password directly to `SEC-USR-PWD`, this is a critical security vulnerability by modern standards. The migrated system must never store passwords in plain text — Azure AD B2C uses industry-standard password hashing (bcrypt/PBKDF2). During migration, existing passwords cannot be migrated directly; users must be forced to reset passwords on first login to Azure AD B2C.
 
 5. **No multi-tenant isolation**: The mainframe system serves a single organization (NordKredit). The migrated system on Azure may need to support multi-tenancy if the platform is shared. Tenant isolation must be considered in the Azure AD B2C configuration.
 
 ## Domain Expert Notes
 
-- **null** — Awaiting domain expert review. Key questions: (1) What External Security Manager is used in production — RACF, ACF2, or TopSecret? (2) What are the current RACF password policies (length, complexity, expiration, lockout thresholds)? (3) Which CICS transaction codes are defined in the security profiles, and what user groups have access to each? (4) Is there a CICS security exit that intercepts sign-on events for audit logging? (5) Has NordKredit already implemented PSD2 SCA for its online banking channels, and if so, what second factor is used?
+- **Copybook analysis complete** — CSUSR01Y confirms user data structure with plain-text password (8 chars), user ID (8 chars), name fields, and user type ('A'/'U'). COCOM01Y confirms the COMMAREA carries `CDEMO-USER-ID` and `CDEMO-USER-TYPE` populated by the sign-on program. **Remaining questions for domain expert:** (1) What External Security Manager is used in production — RACF, ACF2, or TopSecret? (2) Does COSGN00C compare `SEC-USR-PWD` directly (plain text) or does it delegate to the ESM? (3) Which CICS transaction codes are defined in the security profiles, and what user groups have access to each? (4) Has NordKredit already implemented PSD2 SCA for its online banking channels, and if so, what second factor is used? (5) What is the password reset/migration strategy for moving users to Azure AD B2C?
 
 ---
 
 **Template version:** 1.0
-**Last updated:** 2026-02-16
+**Last updated:** 2026-02-17
