@@ -53,6 +53,10 @@ Each copybook document includes:
 | [COCOM01Y](./cocom01y-commarea) | Application COMMAREA | Up to 2,000 bytes | N/A (CICS COMMAREA) | *(REST API layer)* | Reconstructed from program references |
 | [CSUSR01Y](./csusr01y-user-data) | Signed-on User Data | Variable | N/A (CICS security) | *(Azure AD claims)* | Reconstructed from program references |
 
+## Schema Mapping
+
+- [Db2-to-Azure SQL Schema Mapping](./db2-to-azure-sql-schema-mapping) — comprehensive field-level mapping of all 9 tables from COBOL VSAM/Db2 structures to Azure SQL, including EBCDIC conversion requirements, VSAM key-to-index mapping, and post-migration validation checklist.
+
 ## COBOL PIC Clause Quick Reference
 
 | PIC Clause        | Meaning                  | .NET Type   | SQL Type         | Conversion Method                    |
