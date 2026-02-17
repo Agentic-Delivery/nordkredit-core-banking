@@ -193,13 +193,11 @@ tests/
 docs/
   Architecture/                # ADRs
   lessons-learned/             # Lessons learned
-  requirements/                # Extracted business rules per domain
-    payments/
-    deposits/
-    lending/
-    account-management/
   regulatory/                  # Regulatory traceability matrices
 docs-site/                     # Docusaurus documentation site
+  docs/
+    business-rules/            # Extracted business rules per domain
+    requirements/              # Use cases and requirements
 .factory/
   context.md                   # Shared project context
 .github/
