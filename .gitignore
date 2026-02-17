@@ -20,6 +20,9 @@ Thumbs.db
 # Node (docs-site)
 node_modules/
 
+# Bicep compiled ARM templates
+infra/**/*.json
+
 # Environment
 .env
 *.local
