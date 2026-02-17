@@ -50,6 +50,15 @@ Core banking system for NordKredit AB, a mid-size Swedish bank. The system handl
 - **DORA compliance**: Azure as critical ICT third-party provider requires DORA-compliant contract clauses, audit rights, exit strategy
 - **EBA outsourcing**: Cloud migration of core banking = material outsourcing — requires risk assessment, supervisory notification, documented exit plan
 
+## COBOL Source
+
+The full COBOL source for this project comes from AWS CardDemo:
+- **Repo**: https://github.com/aws-samples/aws-mainframe-modernization-carddemo
+- **Programs**: `app/cbl/` (batch: CBTRN01C-03C, CBACT01C-04C, CBSTM03A/B, CBCUS01C; online: COTRN00C-02C, COCRDLIC/SLC/UPC, COSGN00C, COUSR00C-03C, COACTUPC/VWC, COBIL00C, CORPT00C, COADM01C, COMEN01C)
+- **Copybooks**: `app/cpy/` (~30 copybooks including COCOM01Y, CSUSR01Y, CVACT01-03Y, CVCRD01Y, CVTRA01-07Y)
+- **BMS maps**: `app/cpy-bms/`
+- Local copies: `docs/cobol-source/cbl/` and `docs/cobol-source/cpy/`
+
 ## Architecture Decisions
 
 | Decision | Rationale | Date |
@@ -65,23 +74,16 @@ Core banking system for NordKredit AB, a mid-size Swedish bank. The system handl
 
 ## Backlog Status
 
-> Last updated: 2026-02-15
+> Last updated: 2026-02-17
 
-- **Open issues:** 1
-- **In progress:** 1 (#46 — Upgrade Delivery Factory v1.1.0 → v1.6.0)
-- **Completed:** 22
-
-### Recently Completed
-
-- #45 Enable GitHub Pages and trigger initial docs deployment
-- #43 Add workflow_dispatch trigger to docs deploy workflow
-- #42 Delete remaining stale branches after auto-delete enablement
-- #41 Enable auto-delete branches and clean up stale branches
-- #36 Create GitHub Actions workflow for docs site deployment
+- Issues #124-#158 created covering all remaining work (Phases 1-4)
+- Workers completed ~15/35 issues (all Phase 2 + Phase 4)
+- Remaining ~20 issues mostly need COBOL source from CardDemo repo
+- Only #135 (domain expert sign-off) truly requires human coordination
 
 ### Known Blockers
 
-- Access to COBOL source code repository needed for Phase 1 knowledge capture
+- ~~Access to COBOL source code repository~~ — **Resolved**: source available from AWS CardDemo repo (see COBOL Source section above)
 - Domain expert availability must be scheduled before departures
 
 ## Known Gotchas (cross-factory)
