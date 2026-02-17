@@ -22,6 +22,7 @@ Traceability matrices linking business rules to applicable regulations and origi
 ## Documents
 
 - [Consolidated Traceability Matrix](./traceability-matrix.md) — Full mapping of all 54 business rules to regulatory requirements, organized by regulation with coverage gap analysis
+- [DORA Exit Strategy for Azure](./dora-exit-strategy.md) — Exit strategy for Azure as critical ICT third-party provider, per DORA Art. 28-30 and EBA Outsourcing Guidelines
 
 ## Status
 
