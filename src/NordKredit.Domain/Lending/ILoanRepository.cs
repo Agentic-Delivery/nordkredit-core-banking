@@ -33,4 +33,11 @@ public interface ILoanRepository
     /// Business rule: LND-BR-005 (balance update after repayment).
     /// </summary>
     Task UpdateAsync(Loan loan, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Retrieves all loans with the specified status.
+    /// Used by lending batch functions for bulk processing (amortization, delinquency monitoring).
+    /// Business rule: LND-BR-008 (delinquency management).
+    /// </summary>
+    Task<IReadOnlyList<Loan>> GetByStatusAsync(LoanStatus status, CancellationToken cancellationToken = default);
 }
