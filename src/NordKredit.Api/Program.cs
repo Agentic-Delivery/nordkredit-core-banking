@@ -8,6 +8,7 @@ using NordKredit.Domain.Transactions;
 using NordKredit.Infrastructure;
 using NordKredit.Infrastructure.Messaging;
 using NordKredit.Infrastructure.Transactions;
+using AcctMgmtSqlRepo = NordKredit.Infrastructure.AccountManagement.SqlAccountManagementRepository;
 using CardMgmtSqlCardRepo = NordKredit.Infrastructure.CardManagement.SqlCardRepository;
 using CardMgmtSqlXrefRepo = NordKredit.Infrastructure.CardManagement.SqlCardCrossReferenceRepository;
 
@@ -70,6 +71,10 @@ builder.Services.AddScoped<ICardCrossReferenceRepository, SqlCardCrossReferenceR
 // Card Management domain — Azure SQL repositories for card entity operations
 builder.Services.AddScoped<NordKredit.Domain.CardManagement.ICardRepository, CardMgmtSqlCardRepo>();
 builder.Services.AddScoped<NordKredit.Domain.CardManagement.ICardCrossReferenceRepository, CardMgmtSqlXrefRepo>();
+
+// Account Management domain — Azure SQL repository for account lifecycle operations
+// COBOL source: CVACT01Y.cpy (ACCOUNT-RECORD). Business rules: ACCT-BR-001 through ACCT-BR-008.
+builder.Services.AddScoped<NordKredit.Domain.AccountManagement.IAccountManagementRepository, AcctMgmtSqlRepo>();
 
 // EF Core DbContext — replaces Db2 for z/OS
 builder.Services.AddDbContext<NordKreditDbContext>();

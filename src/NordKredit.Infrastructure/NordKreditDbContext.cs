@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using NordKredit.Domain.CardManagement;
 using NordKredit.Domain.Transactions;
+using ManagedAccount = NordKredit.Domain.AccountManagement.Account;
 using TransactionCardCrossReference = NordKredit.Domain.Transactions.CardCrossReference;
 
 namespace NordKredit.Infrastructure;
@@ -25,6 +26,7 @@ public class NordKreditDbContext : DbContext
     public DbSet<DailyReject> DailyRejects => Set<DailyReject>();
     public DbSet<TransactionType> TransactionTypes => Set<TransactionType>();
     public DbSet<TransactionCategory> TransactionCategories => Set<TransactionCategory>();
+    public DbSet<ManagedAccount> ManagedAccounts => Set<ManagedAccount>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -39,6 +41,7 @@ public class NordKreditDbContext : DbContext
         ConfigureDailyReject(modelBuilder);
         ConfigureTransactionType(modelBuilder);
         ConfigureTransactionCategory(modelBuilder);
+        ConfigureManagedAccount(modelBuilder);
     }
 
     /// <summary>
@@ -221,6 +224,35 @@ public class NordKreditDbContext : DbContext
             entity.Property(e => e.TypeCode).HasMaxLength(2).IsRequired();
             entity.Property(e => e.CategoryCode).IsRequired();
             entity.Property(e => e.Description).HasMaxLength(50).IsRequired();
+        });
+    }
+
+    /// <summary>
+    /// Account Management entity mapping. COBOL source: CVACT01Y.cpy (ACCOUNT-RECORD), 300 bytes.
+    /// Full account lifecycle entity with status state machine.
+    /// Business rules: ACCT-BR-001, ACCT-BR-004, ACCT-BR-005, ACCT-BR-006, ACCT-BR-007.
+    /// Regulations: GDPR Art. 5(1)(c)(d), FSA FFFS 2014:5 Ch. 3, PSD2 Art. 64.
+    /// </summary>
+    private static void ConfigureManagedAccount(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<ManagedAccount>(entity =>
+        {
+            entity.ToTable("ManagedAccounts");
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Id).HasMaxLength(11).IsRequired();
+            entity.Property(e => e.Status).HasConversion<string>().HasMaxLength(10).IsRequired();
+            entity.Property(e => e.AccountType).HasConversion<string>().HasMaxLength(10).IsRequired();
+            entity.Property(e => e.CurrentBalance).HasColumnType("decimal(12,2)").IsRequired();
+            entity.Property(e => e.CreditLimit).HasColumnType("decimal(12,2)").IsRequired();
+            entity.Property(e => e.CashCreditLimit).HasColumnType("decimal(12,2)").IsRequired();
+            entity.Property(e => e.CurrentCycleCredit).HasColumnType("decimal(12,2)").IsRequired();
+            entity.Property(e => e.CurrentCycleDebit).HasColumnType("decimal(12,2)").IsRequired();
+            entity.Property(e => e.ExpirationDate).IsRequired(false);
+            entity.Property(e => e.HolderName).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.OpenedDate).IsRequired();
+            entity.Property(e => e.ClosedDate).IsRequired(false);
+            entity.Property(e => e.RowVersion).IsRowVersion();
         });
     }
 }
