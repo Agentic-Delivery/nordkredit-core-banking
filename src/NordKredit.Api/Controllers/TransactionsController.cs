@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NordKredit.Domain.Transactions;
 
@@ -7,9 +8,11 @@ namespace NordKredit.Api.Controllers;
 /// REST API for transaction operations.
 /// Replaces COBOL CICS online transaction screens COTRN00C (list), COTRN01C (detail), and COTRN02C (add).
 /// Regulations: FFFS 2014:5 Ch.8 (accurate records), PSD2 Art.94 (transaction retention).
+/// SEC-BR-005: Requires CustomerAccess or OperatorAccess authentication (replaces CICS CESN).
 /// </summary>
 [ApiController]
 [Route("api/transactions")]
+[Authorize(Policy = "CustomerAccess")]
 public class TransactionsController : ControllerBase
 {
     private readonly TransactionAddService _addService;

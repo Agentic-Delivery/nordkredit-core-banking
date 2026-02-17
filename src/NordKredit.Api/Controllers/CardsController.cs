@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NordKredit.Domain.CardManagement;
 
@@ -9,9 +10,11 @@ namespace NordKredit.Api.Controllers;
 /// COBOL source: COCRDLIC.cbl:1123-1411 (pagination/filtering), COCRDSLC.cbl:608-812 (detail),
 ///               COCRDUPC.cbl:275-1523 (card update with state machine and concurrency).
 /// Regulations: PSD2 Art. 97 (SCA), GDPR Art. 15 (right of access), FFFS 2014:5 Ch. 8 §4.
+/// SEC-BR-001: Internal only — requires OperatorAccess (Azure AD). Maps to COBOL CDEMO-USRTYP-ADMIN role.
 /// </summary>
 [ApiController]
 [Route("api/cards")]
+[Authorize(Policy = "OperatorAccess")]
 public class CardsController : ControllerBase
 {
     private readonly CardDetailService _detailService;
