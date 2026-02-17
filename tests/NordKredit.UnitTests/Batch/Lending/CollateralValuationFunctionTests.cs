@@ -277,7 +277,7 @@ internal sealed class StubCollateralRepository : ICollateralRepository
     public Task<IReadOnlyList<Collateral>> GetByLoanAccountIdAsync(string loanAccountId, CancellationToken cancellationToken = default) =>
         Task.FromResult(_collateralByLoan.TryGetValue(loanAccountId, out var collaterals)
             ? collaterals
-            : ([]));
+            : []);
 
     public Task AddAsync(Collateral collateral, CancellationToken cancellationToken = default) =>
         Task.CompletedTask;
