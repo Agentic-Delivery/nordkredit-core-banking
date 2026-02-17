@@ -3,6 +3,7 @@ using NordKredit.Domain.Transactions;
 using NordKredit.Functions;
 using NordKredit.Functions.Batch;
 using NordKredit.Functions.Batch.Deposits;
+using NordKredit.Functions.Batch.Lending;
 using NordKredit.Functions.Telemetry;
 using NordKredit.Infrastructure;
 using NordKredit.Infrastructure.Transactions;
@@ -48,6 +49,16 @@ builder.Services.AddScoped<IInterestAccrualStep>(sp => sp.GetRequiredService<Int
 builder.Services.AddScoped<StatementGenerationFunction>();
 builder.Services.AddScoped<IStatementGenerationStep>(sp => sp.GetRequiredService<StatementGenerationFunction>());
 builder.Services.AddScoped<DepositsBatchOrchestrator>();
+
+// Lending batch pipeline — amortization, collateral valuation, delinquency monitoring.
+// FSA FFFS 2014:5 Ch. 6 (credit risk), AML/KYC (delinquency feeds AML screening).
+builder.Services.AddScoped<AmortizationProcessingFunction>();
+builder.Services.AddScoped<IAmortizationProcessingStep>(sp => sp.GetRequiredService<AmortizationProcessingFunction>());
+builder.Services.AddScoped<CollateralValuationFunction>();
+builder.Services.AddScoped<ICollateralValuationStep>(sp => sp.GetRequiredService<CollateralValuationFunction>());
+builder.Services.AddScoped<DelinquencyMonitoringFunction>();
+builder.Services.AddScoped<IDelinquencyMonitoringStep>(sp => sp.GetRequiredService<DelinquencyMonitoringFunction>());
+builder.Services.AddScoped<LendingBatchOrchestrator>();
 
 builder.Services.AddSingleton(TimeProvider.System);
 
