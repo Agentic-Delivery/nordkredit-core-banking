@@ -5,4 +5,8 @@
     <ProjectReference Include="..\NordKredit.Infrastructure\NordKredit.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Identity.Web" Version="3.14.1" />
+  </ItemGroup>
+
 </Project>
