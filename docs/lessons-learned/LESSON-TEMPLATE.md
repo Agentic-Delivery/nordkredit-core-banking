@@ -27,6 +27,7 @@ _Example: We deployed a cloud messaging service to send push notifications to mo
 **Assumptions:**
 
 _Example:_
+
 - _We assumed "availability zones" was a free redundancy feature_
 - _We assumed Standard tier pricing was flat-rate per month_
 - _We assumed IaC templates would warn about cost implications_
@@ -51,6 +52,7 @@ _Example: After deploying to dev environment, we received a cloud cost alert sho
 **Evidence:**
 
 _Example:_
+
 - _Cloud cost management screenshot showing $100/month projection_
 - _IaC diff showing zone redundancy enabled vs disabled_
 - _Cloud pricing calculator showing Standard = $5, Zone-redundant = $100_
@@ -87,6 +89,7 @@ _Example: Lack of cost-awareness in infrastructure-as-code review process. No ch
 **What we learned:**
 
 _Example:_
+
 - _IaC parameters can have massive cost implications (20x in this case)_
 - _"Availability zones" sounds like a best-practice feature but is expensive overkill for dev/staging_
 - _Cloud documentation hides cost details in FAQs and fine print_
@@ -126,22 +129,26 @@ _Example: For dev/staging, **explicitly set cheap tiers and disable premium feat
 **How to avoid in future:**
 
 **Before writing IaC templates:**
+
 1. Check cloud pricing calculator for resource
 2. Identify parameters that affect cost (tier, redundancy, zones)
 3. Set explicit values for dev/staging (cheapest) and production (justified)
 
 **Before committing IaC:**
+
 1. Deploy to empty test environment
 2. Check cloud cost management for projected monthly cost
 3. Verify cost is within budget (dev: $25/month, staging: $100/month, prod: $500/month)
 4. Delete test environment
 
 **Before merging PR:**
+
 1. Reviewer checks "Cost impact reviewed?" checkbox
 2. Reviewer verifies explicit tier values for all resources
 3. Reviewer questions any premium features (zones, redundancy, etc.) in non-prod
 
 **Monitoring:**
+
 1. Cloud cost alerts at 50%, 80%, 100% of budget
 2. Weekly cost review dashboard
 3. Anomaly detection for unexpected spikes
