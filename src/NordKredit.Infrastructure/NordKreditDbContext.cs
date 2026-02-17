@@ -23,6 +23,8 @@ public class NordKreditDbContext : DbContext
     public DbSet<TransactionCardCrossReference> CardCrossReferences => Set<TransactionCardCrossReference>();
     public DbSet<Account> Accounts => Set<Account>();
     public DbSet<DailyReject> DailyRejects => Set<DailyReject>();
+    public DbSet<TransactionType> TransactionTypes => Set<TransactionType>();
+    public DbSet<TransactionCategory> TransactionCategories => Set<TransactionCategory>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -35,6 +37,8 @@ public class NordKreditDbContext : DbContext
         ConfigureCardCrossReference(modelBuilder);
         ConfigureAccount(modelBuilder);
         ConfigureDailyReject(modelBuilder);
+        ConfigureTransactionType(modelBuilder);
+        ConfigureTransactionCategory(modelBuilder);
     }
 
     /// <summary>
@@ -184,6 +188,39 @@ public class NordKreditDbContext : DbContext
             entity.Property(e => e.RejectReason).HasMaxLength(100).IsRequired();
             entity.Property(e => e.TransactionAmount).HasColumnType("decimal(11,2)").IsRequired();
             entity.Property(e => e.RejectedAt).IsRequired();
+        });
+    }
+
+    /// <summary>
+    /// Transaction type lookup mapping. COBOL source: CVTRA03Y.cpy (TRAN-TYPE-RECORD).
+    /// VSAM TRANTYPE (primary key = TRAN-TYPE PIC X(02)).
+    /// </summary>
+    private static void ConfigureTransactionType(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<TransactionType>(entity =>
+        {
+            entity.ToTable("TransactionTypes");
+            entity.HasKey(e => e.TypeCode);
+
+            entity.Property(e => e.TypeCode).HasMaxLength(2).IsRequired();
+            entity.Property(e => e.Description).HasMaxLength(50).IsRequired();
+        });
+    }
+
+    /// <summary>
+    /// Transaction category lookup mapping. COBOL source: CVTRA04Y.cpy (TRAN-CAT-RECORD).
+    /// VSAM TRANCATG (composite key = TRAN-TYPE PIC X(02) + TRAN-CAT-CD PIC 9(04)).
+    /// </summary>
+    private static void ConfigureTransactionCategory(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<TransactionCategory>(entity =>
+        {
+            entity.ToTable("TransactionCategories");
+            entity.HasKey(e => new { e.TypeCode, e.CategoryCode });
+
+            entity.Property(e => e.TypeCode).HasMaxLength(2).IsRequired();
+            entity.Property(e => e.CategoryCode).IsRequired();
+            entity.Property(e => e.Description).HasMaxLength(50).IsRequired();
         });
     }
 }
