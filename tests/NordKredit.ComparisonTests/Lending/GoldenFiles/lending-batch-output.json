@@ -1,0 +1,94 @@
+{
+  "_comment": "Golden file: Expected mainframe output for lending nightly batch pipeline (amortization, collateral valuation, delinquency monitoring).",
+  "_cobolSource": "Nightly lending batch JCL — 3-step pipeline: interest accrual, collateral revaluation, delinquency flagging",
+  "_businessRule": "LND-BR-004 (interest), LND-BR-006 (collateral), LND-BR-008 (delinquency)",
+  "_regulation": "FSA FFFS 2014:5 Ch.4 §3 (operational risk), Ch.6 (credit risk), DORA Art.11, AML 2017:11",
+  "_knownDifferences": {
+    "batchFormat": "COBOL generates fixed-width report file with control totals. Migrated system generates structured JSON. Content is semantically identical.",
+    "slaMonitoring": "COBOL relies on JCL job scheduler timestamps. Migrated system includes SLA breach flag in output."
+  },
+  "success": true,
+  "slaBreached": false,
+  "amortizationResult": {
+    "totalProcessed": 5,
+    "successCount": 3,
+    "skippedCount": 1,
+    "failedCount": 1,
+    "totalInterestAccrued": 7062.50,
+    "processedLoans": [
+      {
+        "accountId": "20000000001",
+        "interestAmount": 2291.67,
+        "currentBalance": 500000.00,
+        "isSuccess": true,
+        "failureReason": null
+      },
+      {
+        "accountId": "20000000002",
+        "interestAmount": 708.33,
+        "currentBalance": 100000.00,
+        "isSuccess": true,
+        "failureReason": null
+      },
+      {
+        "accountId": "20000000003",
+        "interestAmount": 4062.50,
+        "currentBalance": 1250000.00,
+        "isSuccess": true,
+        "failureReason": null
+      },
+      {
+        "accountId": "20000000007",
+        "interestAmount": 0.00,
+        "currentBalance": 0.00,
+        "isSuccess": true,
+        "failureReason": null
+      },
+      {
+        "accountId": "20000000006",
+        "interestAmount": 0.00,
+        "currentBalance": 42890.10,
+        "isSuccess": false,
+        "failureReason": "Account is frozen — interest accrual suspended"
+      }
+    ]
+  },
+  "collateralValuationResult": {
+    "totalProcessed": 3,
+    "withinLtvLimitCount": 2,
+    "exceedingLtvLimitCount": 1,
+    "staleValuationCount": 1,
+    "valuatedLoans": [
+      {
+        "accountId": "20000000001",
+        "currentBalance": 500000.00,
+        "totalCollateralValue": 750000.00,
+        "ltvRatio": 66.67,
+        "isWithinLtvLimit": true,
+        "hasStaleValuation": false
+      },
+      {
+        "accountId": "20000000002",
+        "currentBalance": 100000.00,
+        "totalCollateralValue": 85000.00,
+        "ltvRatio": 117.65,
+        "isWithinLtvLimit": false,
+        "hasStaleValuation": false
+      },
+      {
+        "accountId": "20000000003",
+        "currentBalance": 1250000.00,
+        "totalCollateralValue": 1800000.00,
+        "ltvRatio": 69.44,
+        "isWithinLtvLimit": true,
+        "hasStaleValuation": true
+      }
+    ]
+  },
+  "delinquencyMonitoringResult": {
+    "totalProcessed": 3,
+    "newlyDelinquentCount": 1,
+    "flaggedForAmlScreeningCount": 1,
+    "elevatedRiskCount": 1
+  }
+}

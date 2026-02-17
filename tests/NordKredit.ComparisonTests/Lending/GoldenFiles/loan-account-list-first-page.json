@@ -1,0 +1,78 @@
+{
+  "_comment": "Golden file: Expected mainframe output for first page of loan account list (keyset pagination, page size 7).",
+  "_cobolSource": "CVACT01Y.cpy — ACCOUNT-RECORD (300 bytes), STARTBR/READNEXT pagination on ACCTFILE",
+  "_businessRule": "LND-BR-001",
+  "_regulation": "FSA FFFS 2014:5 Ch.6 (credit risk), GDPR Art.15 (right of access)",
+  "_knownDifferences": {
+    "pagination": "COBOL uses CICS STARTBR/READNEXT. Migrated system uses keyset pagination via SQL (start-after-ID). Both produce identical page content for the same dataset.",
+    "dateFormat": "COBOL uses MM/DD/YY. Migrated system uses ISO 8601 (YYYY-MM-DD).",
+    "statusValues": "COBOL uses 'Y'/'N'. Migrated system uses Active/Delinquent/Defaulted/Frozen/PaidOff/Closed."
+  },
+  "loans": [
+    {
+      "accountId": "20000000001",
+      "status": "Active",
+      "loanType": "TermLoan",
+      "currentBalance": 500000.00,
+      "creditLimit": 500000.00,
+      "borrowerName": "Erik Johansson",
+      "originationDate": "2023-01-15"
+    },
+    {
+      "accountId": "20000000002",
+      "status": "Active",
+      "loanType": "RevolvingCredit",
+      "currentBalance": 35000.00,
+      "creditLimit": 100000.00,
+      "borrowerName": "Anna Lindström",
+      "originationDate": "2022-06-01"
+    },
+    {
+      "accountId": "20000000003",
+      "status": "Active",
+      "loanType": "Mortgage",
+      "currentBalance": 1250000.00,
+      "creditLimit": 1500000.00,
+      "borrowerName": "Björk Ekström",
+      "originationDate": "2021-03-10"
+    },
+    {
+      "accountId": "20000000004",
+      "status": "Delinquent",
+      "loanType": "TermLoan",
+      "currentBalance": 78500.25,
+      "creditLimit": 100000.00,
+      "borrowerName": "Lars Öberg",
+      "originationDate": "2020-11-20"
+    },
+    {
+      "accountId": "20000000005",
+      "status": "Active",
+      "loanType": "TermLoan",
+      "currentBalance": 350000.00,
+      "creditLimit": 400000.00,
+      "borrowerName": "Stockholms Bygg AB",
+      "originationDate": "2024-02-28"
+    },
+    {
+      "accountId": "20000000006",
+      "status": "Frozen",
+      "loanType": "RevolvingCredit",
+      "currentBalance": 42890.10,
+      "creditLimit": 50000.00,
+      "borrowerName": "Maja Ålund",
+      "originationDate": "2019-08-05"
+    },
+    {
+      "accountId": "20000000007",
+      "status": "PaidOff",
+      "loanType": "TermLoan",
+      "currentBalance": 0.00,
+      "creditLimit": 200000.00,
+      "borrowerName": "Fredrik Hägg",
+      "originationDate": "2017-04-12"
+    }
+  ],
+  "hasNextPage": true,
+  "pageSize": 7
+}
