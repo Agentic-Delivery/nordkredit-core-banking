@@ -1,0 +1,11 @@
+{
+  "accountId": "12345678901",
+  "status": "A",
+  "currentBalance": 1500.75,
+  "creditLimit": 5000.00,
+  "cashCreditLimit": 1000.00,
+  "currentCycleCredit": 2000.00,
+  "currentCycleDebit": -500.25,
+  "expirationDate": "2028-12-31",
+  "holderName": "JOHN DOE"
+}

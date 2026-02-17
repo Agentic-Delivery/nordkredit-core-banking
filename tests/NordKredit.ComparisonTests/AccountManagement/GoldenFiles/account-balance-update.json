@@ -1,0 +1,10 @@
+{
+  "accountId": "12345678901",
+  "transactionAmount": 200.00,
+  "previousBalance": 1500.75,
+  "expectedBalance": 1700.75,
+  "previousCycleCredit": 2000.00,
+  "expectedCycleCredit": 2200.00,
+  "previousCycleDebit": -500.25,
+  "expectedCycleDebit": -500.25
+}
