@@ -258,7 +258,7 @@ XXXXXXXXXXXXXXXX 99999999999  XX   Description  9999  Description  XX    $999,99
 
 ## Related Documents
 
-- [ADR-001: Batch Pipeline Orchestrator Pattern](/docs/Architecture/ADR-001-batch-pipeline-orchestrator.md)
+- [ADR-001: Batch Pipeline Orchestrator Pattern](../Architecture/ADR-001-batch-pipeline-orchestrator.md)
 - [UC-TRN-04: Daily Transaction Verification](../requirements/transactions/uc-trn-04-daily-verification.md)
 - [UC-TRN-05: Post Daily Transactions](../requirements/transactions/uc-trn-05-daily-posting.md)
 - [UC-TRN-06: Generate Daily Transaction Report](../requirements/transactions/uc-trn-06-daily-report.md)
