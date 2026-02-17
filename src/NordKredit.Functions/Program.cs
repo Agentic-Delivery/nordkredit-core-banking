@@ -18,6 +18,11 @@ builder.Services.AddScoped<CardVerificationFunction>();
 builder.Services.AddScoped<IDailyRejectRepository, SqlDailyRejectRepository>();
 builder.Services.AddScoped<TransactionCreditValidationService>();
 builder.Services.AddScoped<TransactionCreditValidationFunction>();
+builder.Services.AddScoped<ITransactionRepository, SqlTransactionRepository>();
+builder.Services.AddScoped<ITransactionCategoryBalanceRepository, SqlTransactionCategoryBalanceRepository>();
+builder.Services.AddScoped<IUnitOfWork, SqlUnitOfWork>();
+builder.Services.AddScoped<TransactionPostingService>();
+builder.Services.AddScoped<TransactionPostingFunction>();
 
 builder.Services.AddHostedService<Worker>();
 
