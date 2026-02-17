@@ -80,4 +80,21 @@ public class SqlTransactionRepository : ITransactionRepository
             .OrderByDescending(t => t.Id)
             .FirstOrDefaultAsync(cancellationToken);
     }
+
+    /// <summary>
+    /// Retrieves transactions within a processing timestamp date range, ordered by CardNumber then Id.
+    /// COBOL: CBTRN03C.cbl:159-373 — report generation reads TRANSACT sequentially.
+    /// </summary>
+    public async Task<IReadOnlyList<Transaction>> GetByDateRangeAsync(
+        DateTime startDate,
+        DateTime endDate,
+        CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Transactions
+            .Where(t => t.ProcessingTimestamp.Date >= startDate.Date
+                     && t.ProcessingTimestamp.Date <= endDate.Date)
+            .OrderBy(t => t.CardNumber)
+            .ThenBy(t => t.Id)
+            .ToListAsync(cancellationToken);
+    }
 }

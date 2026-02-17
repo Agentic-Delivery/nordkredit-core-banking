@@ -537,6 +537,10 @@ internal sealed class StubTransactionRepositoryForPosting : ITransactionReposito
 
     public Task<Transaction?> GetLastTransactionAsync(CancellationToken cancellationToken = default)
         => Task.FromResult<Transaction?>(null);
+
+    public Task<IReadOnlyList<Transaction>> GetByDateRangeAsync(
+        DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default)
+        => Task.FromResult<IReadOnlyList<Transaction>>([]);
 }
 
 internal sealed class StubTransactionCategoryBalanceRepositoryForPosting : ITransactionCategoryBalanceRepository

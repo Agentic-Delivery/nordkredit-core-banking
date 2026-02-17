@@ -30,4 +30,14 @@ public interface ITransactionRepository
     /// COBOL: COTRN02C.cbl — COPY-LAST-TRAN-DATA (PF5 handler).
     /// </summary>
     Task<Transaction?> GetLastTransactionAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Retrieves transactions within a processing timestamp date range, ordered by CardNumber then Id.
+    /// COBOL: CBTRN03C.cbl:159-373 — report generation reads TRANSACT sequentially.
+    /// The sort order matches the COBOL assumption that the file is sorted by card number.
+    /// </summary>
+    Task<IReadOnlyList<Transaction>> GetByDateRangeAsync(
+        DateTime startDate,
+        DateTime endDate,
+        CancellationToken cancellationToken = default);
 }

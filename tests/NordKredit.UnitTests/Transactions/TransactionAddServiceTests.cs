@@ -424,6 +424,10 @@ internal sealed class StubTransactionRepository : ITransactionRepository
 
     public Task<Transaction?> GetLastTransactionAsync(CancellationToken cancellationToken = default)
         => Task.FromResult(_transactions.OrderByDescending(t => t.Id).FirstOrDefault());
+
+    public Task<IReadOnlyList<Transaction>> GetByDateRangeAsync(
+        DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default)
+        => Task.FromResult<IReadOnlyList<Transaction>>([]);
 }
 
 /// <summary>

@@ -23,6 +23,10 @@ builder.Services.AddScoped<ITransactionCategoryBalanceRepository, SqlTransaction
 builder.Services.AddScoped<IUnitOfWork, SqlUnitOfWork>();
 builder.Services.AddScoped<TransactionPostingService>();
 builder.Services.AddScoped<TransactionPostingFunction>();
+builder.Services.AddScoped<ITransactionTypeRepository, SqlTransactionTypeRepository>();
+builder.Services.AddScoped<ITransactionCategoryRepository, SqlTransactionCategoryRepository>();
+builder.Services.AddScoped<TransactionDetailReportService>();
+builder.Services.AddScoped<TransactionReportFunction>();
 
 builder.Services.AddHostedService<Worker>();
 
