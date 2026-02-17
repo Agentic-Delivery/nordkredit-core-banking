@@ -11,7 +11,7 @@ namespace NordKredit.Functions.Batch;
 /// Regulations: PSD2 Art.97 (SCA), FFFS 2014:5 Ch.4 §3 (credit risk),
 /// EBA Guidelines (creditworthiness).
 /// </summary>
-public partial class TransactionCreditValidationFunction
+public partial class TransactionCreditValidationFunction : ICreditValidationStep
 {
     private readonly TransactionCreditValidationService _validationService;
     private readonly ILogger<TransactionCreditValidationFunction> _logger;
