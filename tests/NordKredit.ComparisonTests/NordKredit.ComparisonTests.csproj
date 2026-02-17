@@ -25,6 +25,7 @@
     <Content Include="CardManagement\GoldenFiles\*.json" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="Transactions\GoldenFiles\*.json" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="AccountManagement\GoldenFiles\*.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Deposits\GoldenFiles\*.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>
