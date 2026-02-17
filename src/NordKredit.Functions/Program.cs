@@ -2,10 +2,17 @@ using Microsoft.EntityFrameworkCore;
 using NordKredit.Domain.Transactions;
 using NordKredit.Functions;
 using NordKredit.Functions.Batch;
+using NordKredit.Functions.Telemetry;
 using NordKredit.Infrastructure;
 using NordKredit.Infrastructure.Transactions;
 
 var builder = Host.CreateApplicationBuilder(args);
+
+// Application Insights telemetry for worker service — DORA Art.11: ICT risk monitoring.
+builder.Services.AddApplicationInsightsTelemetryWorkerService();
+
+// Batch SLA custom metrics — tracks duration, posted, and rejected transaction counts.
+builder.Services.AddSingleton<BatchMetricsService>();
 
 builder.Services.AddDbContext<NordKreditDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("NordKreditDb")));

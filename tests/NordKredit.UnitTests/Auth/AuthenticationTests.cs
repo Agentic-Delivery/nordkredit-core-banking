@@ -33,11 +33,21 @@ public class AuthenticationTests : IClassFixture<AuthenticationTests.NordKreditW
     // =================================================================
 
     [Fact]
-    public async Task Health_NoAuth_Returns200()
+    public async Task HealthLive_NoAuth_Returns200()
     {
         var client = _factory.CreateUnauthenticatedClient();
 
-        var response = await client.GetAsync("/health");
+        var response = await client.GetAsync("/health/live");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task HealthReady_NoAuth_Returns200()
+    {
+        var client = _factory.CreateUnauthenticatedClient();
+
+        var response = await client.GetAsync("/health/ready");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }

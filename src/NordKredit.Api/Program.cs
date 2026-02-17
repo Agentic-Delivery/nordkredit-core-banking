@@ -1,5 +1,9 @@
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Identity.Web;
+using NordKredit.Api.Telemetry;
 using NordKredit.Domain.Transactions;
 using NordKredit.Infrastructure;
 using NordKredit.Infrastructure.Messaging;
@@ -8,6 +12,10 @@ using CardMgmtSqlCardRepo = NordKredit.Infrastructure.CardManagement.SqlCardRepo
 using CardMgmtSqlXrefRepo = NordKredit.Infrastructure.CardManagement.SqlCardCrossReferenceRepository;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Application Insights telemetry — DORA Art.11: ICT risk monitoring.
+builder.Services.AddApplicationInsightsTelemetry();
+builder.Services.AddSingleton<ITelemetryInitializer, NordKreditTelemetryInitializer>();
 
 builder.Services.AddControllers();
 
@@ -75,10 +83,30 @@ if (!string.IsNullOrWhiteSpace(serviceBusConnectionString))
     builder.Services.AddServiceBusMessaging(serviceBusConnectionString);
 }
 
+// Health checks — /health/ready (DB connectivity), /health/live (process alive).
+// DORA Art.11: ICT risk monitoring and incident detection.
+var healthChecksBuilder = builder.Services.AddHealthChecks();
+var dbConnectionString = builder.Configuration.GetConnectionString("NordKreditDb");
+if (!string.IsNullOrWhiteSpace(dbConnectionString))
+{
+    healthChecksBuilder.AddSqlServer(dbConnectionString, name: "database", tags: ["ready"]);
+}
+
 var app = builder.Build();
 
-// Health check endpoint remains unauthenticated — infrastructure probe, not a business endpoint.
-app.MapGet("/health", () => Results.Ok(new { Status = "Healthy" }));
+// Health check endpoints — unauthenticated infrastructure probes.
+// /health/live: Process alive (no dependency checks) — Kubernetes liveness probe.
+// /health/ready: DB connectivity — Kubernetes readiness probe.
+app.MapHealthChecks("/health/live", new HealthCheckOptions
+{
+    Predicate = _ => false,
+    ResponseWriter = WriteHealthResponse,
+});
+app.MapHealthChecks("/health/ready", new HealthCheckOptions
+{
+    Predicate = check => check.Tags.Contains("ready"),
+    ResponseWriter = WriteHealthResponse,
+});
 
 // Authentication and authorization middleware — must be before MapControllers.
 // SEC-BR-003: User session context management — JWT tokens replace CICS COMMAREA session state.
@@ -90,4 +118,12 @@ app.MapControllers();
 app.Run();
 
 // Required for WebApplicationFactory<Program> in integration tests.
-public partial class Program { }
+public partial class Program
+{
+    private static async Task WriteHealthResponse(HttpContext context, HealthReport report)
+    {
+        context.Response.ContentType = "application/json";
+        var status = report.Status.ToString();
+        await context.Response.WriteAsync($"{{\"status\":\"{status}\"}}");
+    }
+}
