@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Identity.Web;
 using NordKredit.Domain.Transactions;
 using NordKredit.Infrastructure;
+using NordKredit.Infrastructure.Messaging;
 using NordKredit.Infrastructure.Transactions;
 using CardMgmtSqlCardRepo = NordKredit.Infrastructure.CardManagement.SqlCardRepository;
 using CardMgmtSqlXrefRepo = NordKredit.Infrastructure.CardManagement.SqlCardCrossReferenceRepository;
@@ -64,6 +65,15 @@ builder.Services.AddScoped<NordKredit.Domain.CardManagement.ICardCrossReferenceR
 
 // EF Core DbContext — replaces Db2 for z/OS
 builder.Services.AddDbContext<NordKreditDbContext>();
+
+// Azure Service Bus messaging — replaces IBM MQ for Bankgirot and SWIFT payment clearing.
+// PAY-BR-001: Payment clearing integration via Azure Service Bus queues/topics.
+// Regulations: PSD2 Art. 97 (SCA), FFFS 2014:5 Ch. 8 (accurate records).
+var serviceBusConnectionString = builder.Configuration.GetConnectionString("ServiceBus");
+if (!string.IsNullOrWhiteSpace(serviceBusConnectionString))
+{
+    builder.Services.AddServiceBusMessaging(serviceBusConnectionString);
+}
 
 var app = builder.Build();
 
