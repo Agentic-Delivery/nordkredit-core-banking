@@ -1,0 +1,46 @@
+{
+  "_comment": "Golden file: Expected mainframe output for deposit statement generation batch (interest posting and statement output).",
+  "_cobolSource": "Dedicated statement generation batch program — interest posting and cycle statement",
+  "_businessRule": "DEP-BR-004 (interest posting), DEP-BR-001 (account data)",
+  "_regulation": "FSA FFFS 2014:5 Ch.7 (financial reporting), PSD2 Art.57 (information on transactions)",
+  "_knownDifferences": {
+    "statementFormat": "COBOL generates fixed-width print file. Migrated system generates structured JSON. Content is semantically identical."
+  },
+  "totalAccountsProcessed": 5,
+  "statementsGenerated": 3,
+  "skippedNoActivity": 2,
+  "interestPostedCount": 2,
+  "totalInterestPosted": 17.1822,
+  "statements": [
+    {
+      "accountId": "10000000001",
+      "holderName": "Erik Johansson",
+      "openingBalance": 125430.50,
+      "totalCredits": 35000.00,
+      "totalDebits": -12500.75,
+      "interestPosted": 8.5911,
+      "closingBalance": 147938.34,
+      "hasActivity": true
+    },
+    {
+      "accountId": "10000000002",
+      "holderName": "Anna Lindström",
+      "openingBalance": 500000.00,
+      "totalCredits": 0.00,
+      "totalDebits": 0.00,
+      "interestPosted": 8.5911,
+      "closingBalance": 500008.59,
+      "hasActivity": true
+    },
+    {
+      "accountId": "10000000005",
+      "holderName": "Stockholms Bygg AB",
+      "openingBalance": 2750000.75,
+      "totalCredits": 150000.00,
+      "totalDebits": -75000.00,
+      "interestPosted": 0.00,
+      "closingBalance": 2825000.75,
+      "hasActivity": true
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "_comment": "Golden file: Expected mainframe output for deposit interest calculation (daily interest accrual).",
+  "_cobolSource": "Dedicated interest calculation batch program — daily interest with tiered rates",
+  "_businessRule": "DEP-BR-004, DEP-BR-006",
+  "_regulation": "FSA FFFS 2014:5 Ch.3 & 6 (interest disclosure), Deposit Guarantee Directive (coverage includes accrued interest), PSD2 Art.57",
+  "_knownDifferences": {
+    "decimalPrecision": "COBOL COMP-3 uses fixed decimal (PIC S9(10)V9999). Migrated system uses .NET decimal with 4-decimal intermediate precision and MidpointRounding.AwayFromZero."
+  },
+  "scenarios": [
+    {
+      "name": "FlatRate_DemandSavings",
+      "balance": 125430.50,
+      "annualRate": 0.025,
+      "dayCountBasis": 365,
+      "tiered": false,
+      "expectedDailyInterest": 8.5911
+    },
+    {
+      "name": "TieredRate_ChildrensSavings",
+      "balance": 75000.00,
+      "annualRate": 0.035,
+      "tier1Limit": 50000.00,
+      "tier2Rate": 0.025,
+      "tier2Limit": 100000.00,
+      "tier3Rate": null,
+      "dayCountBasis": 365,
+      "tiered": true,
+      "expectedDailyInterest": 6.5068
+    },
+    {
+      "name": "ThreeTier_BusinessDeposit",
+      "balance": 2750000.75,
+      "annualRate": 0.020,
+      "tier1Limit": 500000.00,
+      "tier2Rate": 0.015,
+      "tier2Limit": 2000000.00,
+      "tier3Rate": 0.010,
+      "dayCountBasis": 365,
+      "tiered": true,
+      "expectedDailyInterest": 109.5891
+    },
+    {
+      "name": "ZeroBalance_NoInterest",
+      "balance": 0.00,
+      "annualRate": 0.025,
+      "dayCountBasis": 365,
+      "tiered": false,
+      "expectedDailyInterest": 0.0000
+    },
+    {
+      "name": "NegativeBalance_NoInterest",
+      "balance": -500.00,
+      "annualRate": 0.025,
+      "dayCountBasis": 365,
+      "tiered": false,
+      "expectedDailyInterest": 0.0000
+    }
+  ]
+}

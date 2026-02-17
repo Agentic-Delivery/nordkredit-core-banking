@@ -1,0 +1,23 @@
+{
+  "_comment": "Golden file: Expected mainframe output for deposit account detail inquiry (single account retrieval).",
+  "_cobolSource": "CVACT01Y.cpy — ACCOUNT-RECORD (300 bytes), primary key lookup on ACCT-ID",
+  "_businessRule": "DEP-BR-001, DEP-BR-003",
+  "_regulation": "FFFS 2014:5 Ch.3 (accurate records), Deposit Guarantee Directive 2014/49/EU, GDPR Art.15",
+  "_knownDifferences": {
+    "concurrency": "COBOL uses field-by-field comparison. Migrated system uses SQL rowversion (ETag).",
+    "statusValues": "COBOL: 'Y'/'N'. Migrated system: Active/Dormant/Frozen/Closed."
+  },
+  "accountId": "10000000001",
+  "status": "Active",
+  "productType": "DemandSavings",
+  "currentBalance": 125430.50,
+  "currentCycleCredit": 35000.00,
+  "currentCycleDebit": -12500.75,
+  "disclosureGroupId": "SPARKO001",
+  "maturityDate": null,
+  "holderName": "Erik Johansson",
+  "openedDate": "2020-03-15",
+  "closedDate": null,
+  "accruedInterest": 8.5911,
+  "lastInterestPostingDate": "2025-12-31"
+}

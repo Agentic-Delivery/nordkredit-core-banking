@@ -1,0 +1,70 @@
+{
+  "_comment": "Golden file: Expected mainframe output for first page of deposit account list (keyset pagination, page size 7).",
+  "_cobolSource": "CVACT01Y.cpy — ACCOUNT-RECORD (300 bytes), STARTBR/READNEXT pagination",
+  "_businessRule": "DEP-BR-001",
+  "_regulation": "FFFS 2014:5 Ch.3 (accurate records), GDPR Art.15 (right of access)",
+  "_knownDifferences": {
+    "pagination": "COBOL uses CICS STARTBR/READNEXT. Migrated system uses keyset pagination via SQL (start-after-ID). Both produce identical page content for the same dataset.",
+    "dateFormat": "COBOL uses MM/DD/YY. Migrated system uses ISO 8601 (YYYY-MM-DD)."
+  },
+  "accounts": [
+    {
+      "accountId": "10000000001",
+      "status": "Active",
+      "productType": "DemandSavings",
+      "currentBalance": 125430.50,
+      "holderName": "Erik Johansson",
+      "openedDate": "2020-03-15"
+    },
+    {
+      "accountId": "10000000002",
+      "status": "Active",
+      "productType": "TermDeposit",
+      "currentBalance": 500000.00,
+      "holderName": "Anna Lindström",
+      "openedDate": "2022-01-10"
+    },
+    {
+      "accountId": "10000000003",
+      "status": "Active",
+      "productType": "ChildrensSavings",
+      "currentBalance": 15750.25,
+      "holderName": "Björk Ekström",
+      "openedDate": "2021-06-01"
+    },
+    {
+      "accountId": "10000000004",
+      "status": "Dormant",
+      "productType": "DemandSavings",
+      "currentBalance": 3200.00,
+      "holderName": "Lars Öberg",
+      "openedDate": "2018-11-20"
+    },
+    {
+      "accountId": "10000000005",
+      "status": "Active",
+      "productType": "BusinessDeposit",
+      "currentBalance": 2750000.75,
+      "holderName": "Stockholms Bygg AB",
+      "openedDate": "2023-02-28"
+    },
+    {
+      "accountId": "10000000006",
+      "status": "Active",
+      "productType": "DemandSavings",
+      "currentBalance": 42890.10,
+      "holderName": "Maja Ålund",
+      "openedDate": "2019-08-05"
+    },
+    {
+      "accountId": "10000000007",
+      "status": "Frozen",
+      "productType": "DemandSavings",
+      "currentBalance": 89100.00,
+      "holderName": "Fredrik Hägg",
+      "openedDate": "2017-04-12"
+    }
+  ],
+  "hasNextPage": true,
+  "pageSize": 7
+}
