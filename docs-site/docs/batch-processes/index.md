@@ -67,7 +67,7 @@ See [Batch Dependency Graph](./batch-dependency-graph.md) for the complete execu
 
 - [Batch Dependency Graph](./batch-dependency-graph.md) &mdash; Execution order DAG and scheduling constraints
 - [Cutover Runbook](./cutover-runbook.md) &mdash; Operational cutover procedures including batch timing windows
-- [ADR-001: Batch Pipeline Orchestrator Pattern](/docs/Architecture/ADR-001-batch-pipeline-orchestrator.md) &mdash; Architecture decision for the transaction pipeline
+- [ADR-001: Batch Pipeline Orchestrator Pattern](../Architecture/ADR-001-batch-pipeline-orchestrator.md) &mdash; Architecture decision for the transaction pipeline
 
 ---
 
