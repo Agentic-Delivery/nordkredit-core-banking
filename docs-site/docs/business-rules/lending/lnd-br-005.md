@@ -64,7 +64,7 @@ PERFORM REPAYMENT-PROCESSING (within 2000-POST-TRANSACTION):
 | Transaction Amount | Classification | Balance Effect | Cycle Field Updated |
 |-------------------|---------------|---------------|-------------------|
 | Positive (>= 0) | Charge/Purchase | Balance increases | ACCT-CURR-CYC-CREDIT |
-| Negative (< 0) | Payment/Repayment | Balance decreases | ACCT-CURR-CYC-DEBIT |
+| Negative (`< 0`) | Payment/Repayment | Balance decreases | ACCT-CURR-CYC-DEBIT |
 
 ## Source COBOL Reference
 
