@@ -1,0 +1,71 @@
+{
+  "_comment": "Golden file: Expected mainframe output for first page of transaction list (COTRN00C — PROCESS-PAGE-FORWARD, 10+1 pattern).",
+  "_cobolSource": "COTRN00C.cbl:279-328 — PROCESS-PAGE-FORWARD, WS-MAX-TRAN-LINES = 10",
+  "_businessRule": "TRN-BR-001",
+  "_regulation": "FFFS 2014:5 Ch.8 (operational info systems), PSD2 Art.94 (transaction history access)",
+  "accountId": "12345678901",
+  "transactions": [
+    {
+      "transactionId": "0000000000000001",
+      "date": "2025-11-15",
+      "description": "GROCERY STORE PURCHASE",
+      "amount": 1250.75
+    },
+    {
+      "transactionId": "0000000000000002",
+      "date": "2025-11-15",
+      "description": "ONLINE PAYMENT",
+      "amount": -500.00
+    },
+    {
+      "transactionId": "0000000000000003",
+      "date": "2025-11-14",
+      "description": "SALARY DEPOSIT",
+      "amount": 35000.00
+    },
+    {
+      "transactionId": "0000000000000004",
+      "date": "2025-11-14",
+      "description": "UTILITY BILL PAYMENT",
+      "amount": -875.50
+    },
+    {
+      "transactionId": "0000000000000005",
+      "date": "2025-11-13",
+      "description": "ATM WITHDRAWAL",
+      "amount": -2000.00
+    },
+    {
+      "transactionId": "0000000000000006",
+      "date": "2025-11-13",
+      "description": "RESTAURANT CHARGE",
+      "amount": -345.00
+    },
+    {
+      "transactionId": "0000000000000007",
+      "date": "2025-11-12",
+      "description": "TRANSFER IN",
+      "amount": 5000.00
+    },
+    {
+      "transactionId": "0000000000000008",
+      "date": "2025-11-12",
+      "description": "INSURANCE PREMIUM",
+      "amount": -1500.00
+    },
+    {
+      "transactionId": "0000000000000009",
+      "date": "2025-11-11",
+      "description": "SUBSCRIPTION FEE",
+      "amount": -99.00
+    },
+    {
+      "transactionId": "0000000000000010",
+      "date": "2025-11-11",
+      "description": "INTEREST CREDIT",
+      "amount": 42.35
+    }
+  ],
+  "hasNextPage": true,
+  "pageSize": 10
+}

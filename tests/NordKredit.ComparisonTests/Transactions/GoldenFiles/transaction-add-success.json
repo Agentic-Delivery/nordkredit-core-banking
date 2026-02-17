@@ -1,0 +1,10 @@
+{
+  "_comment": "Golden file: Expected mainframe output after successful transaction add (COTRN02C — PROCESS-ENTER-KEY with Confirm=Y).",
+  "_cobolSource": "COTRN02C.cbl:442-749 — transaction add flow: validate → generate ID → WRITE TRANFILE",
+  "_businessRule": "TRN-BR-003",
+  "_regulation": "FFFS 2014:5 Ch.3 (accurate records), PSD2 Art.64 (transaction data)",
+  "isSuccess": true,
+  "confirmationRequired": false,
+  "transactionId": "0000000000000099",
+  "message": "Transaction added successfully.  Your Tran ID is 0000000000000099."
+}

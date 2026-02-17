@@ -1,0 +1,23 @@
+{
+  "_comment": "Golden file: Expected mainframe output for transaction detail lookup (COTRN01C — READ TRANFILE by ID).",
+  "_cobolSource": "COTRN01C.cbl:85-296 — 9000-READ-TRANSACTION (CICS READ on TRANFILE)",
+  "_businessRule": "TRN-BR-002, TRN-BR-007",
+  "_regulation": "FFFS 2014:5 Ch.8 (accurate records), PSD2 Art.94 (transaction retention), GDPR Art.15 (right of access)",
+  "_knownDifferences": {
+    "cardNumberMasking": "Mainframe returns full card number in CICS screen. Migrated system masks to last 4 digits per PCI-DSS compliance (intentional security improvement).",
+    "dateFormat": "Mainframe uses MM/DD/YY format (COBOL MOVE). Migrated system uses ISO 8601 (YYYY-MM-DDTHH:mm:ss). Both represent the same instant."
+  },
+  "transactionId": "0000000000000001",
+  "cardNumber": "************9012",
+  "typeCode": "SA",
+  "categoryCode": 5001,
+  "source": "ONLINE",
+  "amount": 1250.75,
+  "description": "GROCERY STORE PURCHASE",
+  "originationTimestamp": "2025-11-15T10:30:00",
+  "processingTimestamp": "2025-11-15T10:30:05",
+  "merchantId": 123456789,
+  "merchantName": "ICA MAXI STOCKHOLM",
+  "merchantCity": "STOCKHOLM",
+  "merchantZip": "11120"
+}

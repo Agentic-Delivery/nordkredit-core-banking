@@ -1,0 +1,43 @@
+{
+  "_comment": "Golden file: Expected mainframe output for rejected daily transactions (CBTRN02C — VALIDATE-TRANSACTIONS with reject codes 100-103).",
+  "_cobolSource": "CBTRN02C.cbl:370-422 — credit limit and expiration validation, rejection recording",
+  "_businessRule": "TRN-BR-005",
+  "_regulation": "PSD2 Art.97 (SCA), FFFS 2014:5 Ch.4 §3 (credit risk), EBA Guidelines (creditworthiness)",
+  "_knownDifferences": {
+    "failureCollection": "Mainframe records only the last failure reason per transaction (overwrite pattern). Migrated system collects ALL failure reasons per transaction — intentional improvement for debugging and audit."
+  },
+  "rejections": [
+    {
+      "transactionId": "0000000000000020",
+      "cardNumber": "4000000000009999",
+      "accountId": "",
+      "rejectCode": 100,
+      "rejectReason": "Card number not found in cross-reference",
+      "transactionAmount": 500.00
+    },
+    {
+      "transactionId": "0000000000000021",
+      "cardNumber": "4000123456789012",
+      "accountId": "",
+      "rejectCode": 101,
+      "rejectReason": "Account not found",
+      "transactionAmount": 250.00
+    },
+    {
+      "transactionId": "0000000000000022",
+      "cardNumber": "4000123456789012",
+      "accountId": "12345678901",
+      "rejectCode": 102,
+      "rejectReason": "Transaction exceeds credit limit",
+      "transactionAmount": 99999.99
+    },
+    {
+      "transactionId": "0000000000000023",
+      "cardNumber": "4000123456789012",
+      "accountId": "12345678901",
+      "rejectCode": 103,
+      "rejectReason": "Account expired",
+      "transactionAmount": 100.00
+    }
+  ]
+}

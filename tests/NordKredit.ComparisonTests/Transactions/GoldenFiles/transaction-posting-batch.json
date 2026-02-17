@@ -1,0 +1,29 @@
+{
+  "_comment": "Golden file: Expected mainframe output for daily batch transaction posting (CBTRN02C — POST-TRANSACTIONS).",
+  "_cobolSource": "CBTRN02C.cbl:424-579 — batch posting with balance updates (TCATBAL upsert, ACCT-CURR-BAL update, cycle credit/debit)",
+  "_businessRule": "TRN-BR-005",
+  "_regulation": "FFFS 2014:5 Ch.3 (accurate records), FFFS 2014:5 Ch.16 (financial reporting), DORA Art.11 (ICT change management)",
+  "_knownDifferences": {
+    "atomicity": "Mainframe posts transactions sequentially with partial failures possible (non-atomic). Migrated system wraps each post in IUnitOfWork transaction (atomic per transaction) — intentional improvement for data integrity."
+  },
+  "totalProcessed": 5,
+  "postedCount": 4,
+  "skippedCount": 0,
+  "failedCount": 1,
+  "balanceUpdates": [
+    {
+      "accountId": "12345678901",
+      "previousBalance": 50000.00,
+      "newBalance": 48750.25,
+      "totalCredits": 1250.75,
+      "totalDebits": -2500.50
+    },
+    {
+      "accountId": "99999999999",
+      "previousBalance": 25000.00,
+      "newBalance": 24000.00,
+      "totalCredits": 0.00,
+      "totalDebits": -1000.00
+    }
+  ]
+}

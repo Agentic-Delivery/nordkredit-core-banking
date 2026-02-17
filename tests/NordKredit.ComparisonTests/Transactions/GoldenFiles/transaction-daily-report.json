@@ -1,0 +1,73 @@
+{
+  "_comment": "Golden file: Expected mainframe output for daily transaction detail report (CBTRN03C — TRANSACTION-DETAIL-REPORT).",
+  "_cobolSource": "CBTRN03C.cbl:159-373 — report generation with card grouping, page totals every 20 lines, account totals, grand total",
+  "_businessRule": "TRN-BR-006",
+  "_regulation": "FSA FFFS 2014:5 Ch.7 (financial reporting), AML 2017:11 Para.3 (transaction monitoring)",
+  "totalTransactions": 5,
+  "detailLineCount": 5,
+  "pageCount": 1,
+  "accountGroupCount": 2,
+  "grandTotal": -2248.75,
+  "lines": [
+    {
+      "transactionId": "0000000000000001",
+      "accountId": "12345678901",
+      "typeDescription": "SA-Purchase",
+      "categoryDescription": "5001-Groceries",
+      "source": "ONLINE",
+      "amount": 1250.75,
+      "cardNumber": "4000123456789012"
+    },
+    {
+      "transactionId": "0000000000000002",
+      "accountId": "12345678901",
+      "typeDescription": "SA-Payment",
+      "categoryDescription": "6001-BillPay",
+      "source": "ONLINE",
+      "amount": -500.00,
+      "cardNumber": "4000123456789012"
+    },
+    {
+      "transactionId": "0000000000000003",
+      "accountId": "12345678901",
+      "typeDescription": "DB-Withdrawal",
+      "categoryDescription": "7001-ATM",
+      "source": "BATCH",
+      "amount": -2000.00,
+      "cardNumber": "4000123456789012"
+    },
+    {
+      "transactionId": "0000000000000004",
+      "accountId": "99999999999",
+      "typeDescription": "SA-Purchase",
+      "categoryDescription": "5001-Groceries",
+      "source": "ONLINE",
+      "amount": -1000.00,
+      "cardNumber": "4000987654321098"
+    },
+    {
+      "transactionId": "0000000000000005",
+      "accountId": "99999999999",
+      "typeDescription": "CR-Refund",
+      "categoryDescription": "5001-Groceries",
+      "source": "ONLINE",
+      "amount": 0.50,
+      "cardNumber": "4000987654321098"
+    }
+  ],
+  "pageTotals": [
+    -2248.75
+  ],
+  "accountTotals": [
+    {
+      "cardNumber": "4000123456789012",
+      "accountId": "12345678901",
+      "total": -1249.25
+    },
+    {
+      "cardNumber": "4000987654321098",
+      "accountId": "99999999999",
+      "total": -999.50
+    }
+  ]
+}
