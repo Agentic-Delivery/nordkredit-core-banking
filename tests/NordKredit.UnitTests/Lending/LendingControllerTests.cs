@@ -633,6 +633,12 @@ internal sealed class InMemoryLoanRepository : ILoanRepository
 
     public Task UpdateAsync(Loan loan, CancellationToken cancellationToken = default) =>
         Task.CompletedTask;
+
+    public Task<IReadOnlyList<Loan>> GetByStatusAsync(LoanStatus status, CancellationToken cancellationToken = default)
+    {
+        IReadOnlyList<Loan> result = [.. _loans.Where(l => l.ActiveStatus == status)];
+        return Task.FromResult(result);
+    }
 }
 
 /// <summary>
