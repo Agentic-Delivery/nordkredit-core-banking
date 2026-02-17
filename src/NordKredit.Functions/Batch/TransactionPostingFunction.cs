@@ -11,7 +11,7 @@ namespace NordKredit.Functions.Batch;
 /// Regulations: FFFS 2014:5 Ch.3 (accurate records), FFFS 2014:5 Ch.16 (financial reporting),
 /// PSD2 Art.94 (retention).
 /// </summary>
-public partial class TransactionPostingFunction
+public partial class TransactionPostingFunction : ITransactionPostingStep
 {
     private readonly TransactionPostingService _postingService;
     private readonly ILogger<TransactionPostingFunction> _logger;

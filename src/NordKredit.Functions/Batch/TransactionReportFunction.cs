@@ -11,7 +11,7 @@ namespace NordKredit.Functions.Batch;
 /// Regulations: FFFS 2014:5 Ch.7 (financial reporting), PSD2 Art.94 (accessibility),
 /// AML 2017:11 Para.3 (monitoring).
 /// </summary>
-public partial class TransactionReportFunction
+public partial class TransactionReportFunction : IReportGenerationStep
 {
     private readonly TransactionDetailReportService _reportService;
     private readonly ILogger<TransactionReportFunction> _logger;

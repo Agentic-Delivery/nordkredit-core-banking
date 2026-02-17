@@ -12,7 +12,7 @@ namespace NordKredit.Functions.Batch;
 /// Regulations: PSD2 Art.97 (transaction authorization), FFFS 2014:5 Ch.4 §3
 /// (operational risk), AML/KYC (source verification).
 /// </summary>
-public partial class CardVerificationFunction
+public partial class CardVerificationFunction : ICardVerificationStep
 {
     private readonly CardVerificationService _cardVerificationService;
     private readonly ILogger<CardVerificationFunction> _logger;

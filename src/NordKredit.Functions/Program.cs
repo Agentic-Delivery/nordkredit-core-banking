@@ -15,18 +15,24 @@ builder.Services.AddScoped<ICardCrossReferenceRepository, SqlCardCrossReferenceR
 builder.Services.AddScoped<IAccountRepository, SqlAccountRepository>();
 builder.Services.AddScoped<CardVerificationService>();
 builder.Services.AddScoped<CardVerificationFunction>();
+builder.Services.AddScoped<ICardVerificationStep>(sp => sp.GetRequiredService<CardVerificationFunction>());
 builder.Services.AddScoped<IDailyRejectRepository, SqlDailyRejectRepository>();
 builder.Services.AddScoped<TransactionCreditValidationService>();
 builder.Services.AddScoped<TransactionCreditValidationFunction>();
+builder.Services.AddScoped<ICreditValidationStep>(sp => sp.GetRequiredService<TransactionCreditValidationFunction>());
 builder.Services.AddScoped<ITransactionRepository, SqlTransactionRepository>();
 builder.Services.AddScoped<ITransactionCategoryBalanceRepository, SqlTransactionCategoryBalanceRepository>();
 builder.Services.AddScoped<IUnitOfWork, SqlUnitOfWork>();
 builder.Services.AddScoped<TransactionPostingService>();
 builder.Services.AddScoped<TransactionPostingFunction>();
+builder.Services.AddScoped<ITransactionPostingStep>(sp => sp.GetRequiredService<TransactionPostingFunction>());
 builder.Services.AddScoped<ITransactionTypeRepository, SqlTransactionTypeRepository>();
 builder.Services.AddScoped<ITransactionCategoryRepository, SqlTransactionCategoryRepository>();
 builder.Services.AddScoped<TransactionDetailReportService>();
 builder.Services.AddScoped<TransactionReportFunction>();
+builder.Services.AddScoped<IReportGenerationStep>(sp => sp.GetRequiredService<TransactionReportFunction>());
+builder.Services.AddScoped<DailyBatchOrchestrator>();
+builder.Services.AddSingleton(TimeProvider.System);
 
 builder.Services.AddHostedService<Worker>();
 
