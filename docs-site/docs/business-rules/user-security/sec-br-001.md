@@ -2,7 +2,7 @@
 id: "sec-br-001"
 title: "Role-based access control (admin vs regular user)"
 domain: "user-security"
-cobol_source: "COCRDLIC.cbl:4-7,COCRDLIC.cbl:315-321,COCRDLIC.cbl:1382-1410"
+cobol_source: "COCRDLIC.cbl:4-7,COCRDLIC.cbl:315-321,COCRDLIC.cbl:1382-1410,COCOM01Y.cpy:19-31,CSUSR01Y.cpy:17-23"
 requirement_id: "SEC-BR-001"
 regulations:
   - "PSD2 Art. 97"
@@ -129,10 +129,58 @@ DURING DATA RETRIEVAL (9500-FILTER-RECORDS):
 001410      EXIT
 ```
 
-### Supporting References
+### Supporting References — Copybook Field Definitions
 
-- **COCOM01Y.cpy** (not in workspace): Defines `CARDDEMO-COMMAREA` including `CDEMO-USRTYP-USER` flag
-- **CSUSR01Y.cpy** (not in workspace): Signed-on user data structure with user identity and type
+**COCOM01Y.cpy** — `CARDDEMO-COMMAREA` structure (lines 19-31):
+
+```cobol
+ 01 CARDDEMO-COMMAREA.
+    05 CDEMO-GENERAL-INFO.
+       10 CDEMO-FROM-TRANID             PIC X(04).
+       10 CDEMO-FROM-PROGRAM            PIC X(08).
+       10 CDEMO-TO-TRANID               PIC X(04).
+       10 CDEMO-TO-PROGRAM              PIC X(08).
+       10 CDEMO-USER-ID                 PIC X(08).
+       10 CDEMO-USER-TYPE               PIC X(01).
+          88 CDEMO-USRTYP-ADMIN         VALUE 'A'.
+          88 CDEMO-USRTYP-USER          VALUE 'U'.
+       10 CDEMO-PGM-CONTEXT             PIC 9(01).
+          88 CDEMO-PGM-ENTER            VALUE 0.
+          88 CDEMO-PGM-REENTER          VALUE 1.
+    05 CDEMO-CUSTOMER-INFO.
+       10 CDEMO-CUST-ID                 PIC 9(09).
+       10 CDEMO-CUST-FNAME              PIC X(25).
+       10 CDEMO-CUST-MNAME              PIC X(25).
+       10 CDEMO-CUST-LNAME              PIC X(25).
+    05 CDEMO-ACCOUNT-INFO.
+       10 CDEMO-ACCT-ID                 PIC 9(11).
+       10 CDEMO-ACCT-STATUS             PIC X(01).
+    05 CDEMO-CARD-INFO.
+       10 CDEMO-CARD-NUM                PIC 9(16).
+    05 CDEMO-MORE-INFO.
+       10 CDEMO-LAST-MAP                PIC X(7).
+       10 CDEMO-LAST-MAPSET             PIC X(7).
+```
+
+**CSUSR01Y.cpy** — `SEC-USER-DATA` structure (lines 17-23):
+
+```cobol
+ 01 SEC-USER-DATA.
+    05 SEC-USR-ID                 PIC X(08).
+    05 SEC-USR-FNAME              PIC X(20).
+    05 SEC-USR-LNAME              PIC X(20).
+    05 SEC-USR-PWD                PIC X(08).
+    05 SEC-USR-TYPE               PIC X(01).
+    05 SEC-USR-FILLER             PIC X(23).
+```
+
+**Key findings from copybooks:**
+- `CDEMO-USER-TYPE` is a single character field with 88-level conditions: `'A'` for admin, `'U'` for regular user. The RBAC model is binary.
+- `CDEMO-USER-ID` (8 chars) carries the authenticated user identity in the COMMAREA across all program invocations.
+- `SEC-USR-TYPE` in CSUSR01Y mirrors `CDEMO-USER-TYPE` — the sign-on process populates the COMMAREA user type from the user record.
+- `SEC-USR-PWD` is stored as plain text (8 characters max), consistent with CICS CESN password constraints of that era.
+
+**Additional references:**
 - **COCRDSLC.cbl:326**: Sets `CDEMO-USRTYP-USER` to TRUE on program transfer to card detail
 - **COCRDUPC.cbl:464**: Sets `CDEMO-USRTYP-USER` to TRUE on program transfer to card update
 
@@ -214,15 +262,15 @@ THEN WS-EXCLUDE-THIS-RECORD is set to TRUE
 
 3. **Filter bypass when both filters blank**: When both `FLG-ACCTFILTER-BLANK` and `FLG-CARDFILTER-BLANK` are set, the 9500-FILTER-RECORDS paragraph allows all records through (both IF conditions fall to the ELSE/CONTINUE branch). This is the admin "see all" path. The migrated system should enforce explicit role checks rather than relying on filter state.
 
-4. **CSUSR01Y copybook not in workspace**: The signed-on user data structure (CSUSR01Y) is referenced in all three programs but is not present in the workspace. This copybook likely contains the authenticated user identity, user type, and session data that drives the access control decisions upstream. It must be located and analyzed for the migration.
+4. **CSUSR01Y copybook confirms user data structure**: The `SEC-USER-DATA` record in CSUSR01Y contains `SEC-USR-ID` (8-char user ID), `SEC-USR-FNAME`/`SEC-USR-LNAME` (user names), `SEC-USR-PWD` (8-char password in plain text), and `SEC-USR-TYPE` (1-char type matching CDEMO-USER-TYPE). The sign-on program (COSGN00C, not in workspace) reads this record to authenticate the user and populate the COMMAREA. The migrated system must not store passwords in plain text — Azure AD B2C handles credential storage.
 
 5. **COMMAREA size boundary**: The CARDDEMO-COMMAREA is fixed-size and the program-specific data is appended after it (line 610-612). If the COMMAREA structure changes, all programs must be recompiled together. The migrated system should use a versioned session/context API.
 
 ## Domain Expert Notes
 
-- **null** — Awaiting domain expert review. Key questions: (1) How is the admin role actually determined at sign-on time — is it RACF-based, CICS transaction security, or application-level? (2) Does the CSUSR01Y copybook contain explicit admin/user type flags or is it inferred from the terminal profile? (3) Are there additional RBAC levels beyond admin/user in the production system? (4) Should the migrated system implement a more granular role model (e.g., viewer, operator, admin, auditor)?
+- **Copybook analysis complete** — CSUSR01Y confirms the admin role is determined by `SEC-USR-TYPE` (single character, same domain as `CDEMO-USER-TYPE`: 'A' = admin, 'U' = user). This is an application-level flag stored in the user data record, not RACF-based. The sign-on program (COSGN00C) reads `SEC-USER-DATA`, validates credentials against `SEC-USR-PWD`, and populates `CDEMO-USER-TYPE` in the COMMAREA. **Remaining questions for domain expert:** (1) Are there additional RBAC levels beyond admin/user in the production system? (2) Should the migrated system implement a more granular role model (e.g., viewer, operator, admin, auditor)? (3) Is SEC-USR-TYPE set during user provisioning, and who has authority to change it?
 
 ---
 
 **Template version:** 1.0
-**Last updated:** 2026-02-16
+**Last updated:** 2026-02-17
